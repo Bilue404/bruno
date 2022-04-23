@@ -36,6 +36,7 @@ class BrnSelectionMenuWidget extends StatefulWidget {
   final double? constantTop;
 
   final BrnSelectionConfig themeData;
+  final BrnOnCustomMenuItemBuilder? customMenuItemBuilder;
 
   BrnSelectionMenuWidget(
       {Key? key,
@@ -48,7 +49,8 @@ class BrnSelectionMenuWidget extends StatefulWidget {
       this.configRowCount,
       this.extraScrollController,
       this.constantTop,
-      required this.themeData})
+      required this.themeData,
+      this.customMenuItemBuilder})
       : super(key: key);
 
   @override
@@ -199,6 +201,8 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
         active: menuItemActiveState[index],
         isHighLight:
             menuItemActiveState[index] || menuItemHighlightState[index],
+        customMenuItemBuilder: widget.customMenuItemBuilder,
+        index: index,
         itemClickFunction: () {
           if (widget.onMenuItemClick != null) {
             /// 拦截 menuItem 点击。

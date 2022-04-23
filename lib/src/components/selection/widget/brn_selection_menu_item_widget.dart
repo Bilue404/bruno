@@ -1,72 +1,47 @@
-import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/components/selection/brn_selection_view.dart';
+import 'package:bruno/src/components/selection/widget/menu/brn_selection_menu_item_context.dart';
+import 'package:bruno/src/components/selection/widget/menu/brn_selection_default_menu_widget.dart';
 import 'package:bruno/src/theme/configs/brn_selection_config.dart';
-import 'package:bruno/src/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
 
 typedef void ItemClickFunction();
 
-// ignore: must_be_immutable
 class BrnSelectionMenuItemWidget extends StatelessWidget {
   final String title;
   final bool isHighLight;
   final bool active;
   final ItemClickFunction? itemClickFunction;
-
-  BrnSelectionConfig themeData;
+  final BrnSelectionConfig themeData;
+  final BrnOnCustomMenuItemBuilder? customMenuItemBuilder;
+  final int index;
 
   BrnSelectionMenuItemWidget(
       {Key? key,
-      required this.title,
-      this.isHighLight = false,
-      this.active = false,
-      this.itemClickFunction,
-      required this.themeData})
+        required this.title,
+        this.isHighLight = false,
+        this.active = false,
+        this.itemClickFunction,
+        required this.themeData,
+        this.customMenuItemBuilder,
+        required this.index,
+      })
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final  context =  BrnSelectionMenuItemContext(
+      title,
+      isHighLight,
+      active,
+      index,
+      themeData,
+    );
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-          _menuItemTapped();
-        },
-        child: Container(
-          color: Colors.transparent,
-          constraints: BoxConstraints.expand(),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                  child: Flexible(
-                child: Text(
-                  this.title,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  softWrap: true,
-                  style: isHighLight
-                      ? themeData.menuSelectedTextStyle.generateTextStyle()
-                      : themeData.menuNormalTextStyle.generateTextStyle(),
-                ),
-              )),
-              Padding(
-                  padding: EdgeInsets.only(left: 4),
-                  child: isHighLight
-                      ? (active
-                          ? BrunoTools.getAssetImageWithBandColor(
-                              BrnAsset.iconArrowUpSelect,
-                              configId: themeData.configId)
-                          : BrunoTools.getAssetImageWithBandColor(
-                              BrnAsset.iconArrowDownSelect))
-                      : (active
-                          ? BrunoTools.getAssetImageWithBandColor(
-                              BrnAsset.iconArrowUpSelect,
-                              configId: themeData.configId)
-                          : BrunoTools.getAssetImage(
-                              BrnAsset.iconArrowDownUnSelect)))
-            ],
-          ),
-        ),
+          onTap: () {
+            _menuItemTapped();
+          },
+          child: customMenuItemBuilder?.call(context) ?? BrnSelectionDefaultMenuWidget(context)
       ),
       flex: 1,
     );

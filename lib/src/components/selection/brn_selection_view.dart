@@ -3,6 +3,8 @@ import 'package:bruno/src/components/selection/brn_more_selection.dart';
 import 'package:bruno/src/components/selection/controller/brn_selection_view_controller.dart';
 import 'package:bruno/src/components/selection/converter/brn_selection_converter.dart';
 import 'package:bruno/src/components/selection/widget/brn_selection_menu_widget.dart';
+import 'package:bruno/src/components/selection/widget/menu/brn_selection_base_menu_item_widget.dart';
+import 'package:bruno/src/components/selection/widget/menu/brn_selection_menu_item_context.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/theme/configs/brn_selection_config.dart';
 import 'package:bruno/src/utils/brn_event_bus.dart';
@@ -80,6 +82,8 @@ typedef OnDefaultParamsPrepared = void Function(
 const BrnSelectionConverterDelegate _defaultConverter =
     const DefaultSelectionConverter();
 
+typedef BrnOnCustomMenuItemBuilder = BrnSelectionBaseMenuItemWidget Function(BrnSelectionMenuItemContext context);
+
 // ignore: must_be_immutable
 class BrnSelectionView extends StatefulWidget {
   final BrnSelectionConverterDelegate selectionConverterDelegate;
@@ -107,6 +111,8 @@ class BrnSelectionView extends StatefulWidget {
 
   BrnSelectionConfig? themeData;
 
+  final BrnOnCustomMenuItemBuilder? customMenuItemBuilder;
+
   BrnSelectionView(
       {Key? key,
       required this.originalSelectionData,
@@ -122,7 +128,8 @@ class BrnSelectionView extends StatefulWidget {
       this.onSelectionPreShow,
       this.constantTop,
       this.extraScrollController,
-      this.themeData})
+      this.themeData,
+      this.customMenuItemBuilder})
       : super(key: key) {
     this.themeData ??= BrnSelectionConfig();
     this.themeData = BrnThemeConfigurator.instance
@@ -167,6 +174,7 @@ class BrnSelectionViewState extends State<BrnSelectionView> {
         extraScrollController: widget.extraScrollController,
         constantTop: widget.constantTop,
         configRowCount: widget.configRowCount,
+        customMenuItemBuilder: widget.customMenuItemBuilder,
         onMenuItemClick: (int menuIndex) {
           if (widget.onMenuClickInterceptor != null &&
               widget.onMenuClickInterceptor!(menuIndex)) {
