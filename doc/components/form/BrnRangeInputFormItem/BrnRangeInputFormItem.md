@@ -41,46 +41,50 @@ group:
 
 ```dart
 BrnRangeInputFormItem(
-    {Key? key,
-    this.label,
-    this.title: "",
-    this.subTitle,
-    this.tipLabel,
-    this.prefixIconType: BrnPrefixIconType.normal,
-    this.error: "",
-    this.isEdit: true,
-    this.isRequire: false,
-    this.isPrefixIconEnabled: false,
-    this.onAddTap,
-    this.onRemoveTap,
-    this.onTip,
-    this.hintMin: '最小',
-    this.hintMax: '最大',
-    this.minUnit,
-    this.maxUnit,
-    this.leftMaxCount,
-    this.rightMaxCount,
-    this.inputType,
-    this.onMinChanged,
-    this.onMaxChanged,
-    this.minController,
-    this.maxController,
-    this.minInputFormatters,
-    this.maxInputFormatters,
-    this.themeData})
-    : super(key: key) {
-  this.themeData ??= BrnFormItemConfig();
-  this.themeData = BrnThemeConfigurator.instance
-      .getConfig(configId: this.themeData!.configId)
-      .formItemConfig
-      .merge(this.themeData);
-}
+      {Key? key,
+      this.label,
+      this.title: "",
+      this.subTitle,
+      this.tipLabel,
+      this.prefixIconType: BrnPrefixIconType.normal,
+      this.error: "",
+      this.isEdit: true,
+      this.isRequire: false,
+      this.isPrefixIconEnabled: false,
+      this.onAddTap,
+      this.onRemoveTap,
+      this.onTip,
+      this.hintMin,
+      this.hintMax,
+      this.minUnit,
+      this.maxUnit,
+      this.leftMaxCount,
+      this.rightMaxCount,
+      this.inputType,
+      this.onMinChanged,
+      this.onMaxChanged,
+      this.minController,
+      this.maxController,
+      this.minInputFormatters,
+      this.maxInputFormatters,
+      this.backgroundColor,
+      this.themeData})
+      : super(key: key) {
+    this.themeData ??= BrnFormItemConfig();
+    this.themeData = BrnThemeConfigurator.instance
+        .getConfig(configId: this.themeData!.configId)
+        .formItemConfig
+        .merge(this.themeData);
+    this.themeData = this.themeData!.merge(
+        BrnFormItemConfig(backgroundColor: backgroundColor));
+  }
 ```
 
 ### 参数说明：
 
 | **参数名** | **参数类型** | **描述** | **是否必填** | **默认值** | **备注** |
 | --- | --- | --- | --- | --- | --- |
+| backgroundColor | Color? | 表单项背景色 | 否 | 走主题配置默认色值 Colors.white |  |
 | label | String？ | 录入项的唯一标识，主要用于录入类型页面框架中 | 否 | 无 |  |
 | type | Stirng | 录入项类型，主要用于录入类型页面框架中 | 否 | BrnInputItemType.textRangeInputType | 外部可根据此字段判断表单项类型 |
 | title | String | 录入项标题 | 否 | '' |  |
@@ -96,8 +100,8 @@ BrnRangeInputFormItem(
 | onTip | VoidCallback? | 点击"？"图标回调 | 否 | 无 | 见**tipLabel**字段 |
 | minUnit | String? | 最小范围单位 | 否 | 无 |  |
 | maxUnit | String? | 最大范围单位 | 否 | 无 |  |
-| hintMin | String | 最小范围录入项 hint 提示 | 否 | "最小" |  |
-| hintMax | String | 最大范围录入项 hint 提示 | 否 | "最大" |  |
+| hintMin | String? | 最小范围录入项 hint 提示 | 否 | 默认值为国际化配置文本 "最小" |  |
+| hintMax | String? | 最大范围录入项 hint 提示 | 否 | 默认值为国际化配置文本 "最大" |  |
 | leftMaxCount | int? | 最小值输入框最大字符数 | 否 | 无 |  |
 | rightMaxCount | int? | 最大值输入框最大字符数 | 否 | 无 |  |
 | inputType | String? | 输入内容类型，指定键盘类型，参见 `BrnInputType` | 否 | 无 | 详见**BrnInputType**类，注意：无法通过指定键盘类型确保输入。比如不能通过指定数字键盘确保用户只输入数字。如果有要求用户只输入特定字符的需求请使用**inputFormatters**参数 |

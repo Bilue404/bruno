@@ -34,40 +34,44 @@ group:
 
 ```dart
 BrnTextQuickSelectFormItem(
-    {Key? key,
-    this.label,
-    this.title: "",
-    this.subTitle,
-    this.tipLabel,
-    this.prefixIconType: BrnPrefixIconType.normal,
-    this.error: "",
-    this.isEdit: true,
-    this.isRequire: false,
-    this.onAddTap,
-    this.onRemoveTap,
-    this.onTip,
-    this.hint: "请选择",
-    this.value,
-    this.btnsTxt,
-    this.selectBtnList,
-    this.enableBtnList,
-    this.btns,
-    this.isBtnsScroll: false,
-    this.onTap,
-    this.onBtnSelectChanged,
-    this.themeData})
-    : super(key: key) {
-  themeData ??= BrnFormItemConfig();
-  themeData = BrnThemeConfigurator.instance
-      .getConfig(configId: themeData!.configId)
-      .formItemConfig
-      .merge(themeData);
-}
+      {Key? key,
+      this.label,
+      this.title: "",
+      this.subTitle,
+      this.tipLabel,
+      this.prefixIconType: BrnPrefixIconType.normal,
+      this.error: "",
+      this.isEdit: true,
+      this.isRequire: false,
+      this.onAddTap,
+      this.onRemoveTap,
+      this.onTip,
+      this.hint,
+      this.value,
+      this.btnsTxt,
+      this.selectBtnList,
+      this.enableBtnList,
+      this.btns,
+      this.isBtnsScroll: false,
+      this.onTap,
+      this.onBtnSelectChanged,
+      this.backgroundColor,
+      this.themeData})
+      : super(key: key) {
+    themeData ??= BrnFormItemConfig();
+    themeData = BrnThemeConfigurator.instance
+        .getConfig(configId: themeData!.configId)
+        .formItemConfig
+        .merge(themeData);
+    this.themeData = this.themeData!.merge(
+        BrnFormItemConfig(backgroundColor: backgroundColor));
+  }
 ```
 ### 参数说明
 
 | **参数名** | **参数类型** | **描述** | **是否必填** | **默认值** | **备注** |
 | --- | --- | --- | --- | --- | --- |
+| backgroundColor | Color? | 表单项背景色 | 否 | 走主题配置默认色值 Colors.white |  |
 | label | String? | 录入项的唯一标识，主要用于录入类型页面框架中 | 否 | 无 |  |
 | type | Stirng | 录入项类型，主要用于录入类型页面框架中 | 否 | BrnInputItemType.textQuickSelectInputType | 外部可根据此字段判断表单项类型 |
 | title | String | 录入项标题 | 否 | '' |  |
@@ -83,7 +87,7 @@ BrnTextQuickSelectFormItem(
 | onAddTap | VoidCallback? | 点击"+"图标回调 | 否 | 无 | 见prefixIconType字段 |
 | onRemoveTap | VoidCallback? | 点击"-"图标回调 | 否 | 无 | 见prefixIconType字段 |
 | onBtnSelectChanged | `ValueChanged<int>?` | 按钮选中文案，会把选中的序号回调出去。 | 否 | 无 |  |
-| hint | String | 录入项 hint 提示 | 否 | '请选择' |  |
+| hint | String? | 录入项 hint 提示 | 否 | 默认值为国际化配置文本 '请选择' |  |
 | btnsTxt | `List<String>?` | 快捷操作按钮选项文案列表 | 否 | 无 |  |
 | selectBtnList | `List<bool>?` | 快捷按钮区的初始选中状态 | 否 | 无 |  |
 | enableBtnList | `List<bool>?` | 快捷按钮区的是否可用状态 | 否 | 无 |  |

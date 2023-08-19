@@ -1,7 +1,8 @@
+import 'package:bindings_compatible/bindings_compatible.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-typedef void OnWidgetSizeChange(Size size);
+typedef OnWidgetSizeChange = void Function(Size size);
 
 /// 描述: 计算 Widget 宽高的工具类。
 class MeasureSizeRenderObject extends RenderProxyBox {
@@ -21,11 +22,10 @@ class MeasureSizeRenderObject extends RenderProxyBox {
     if (oldSize == newSize) return;
 
     oldSize = newSize;
-    if (WidgetsBinding.instance != null) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
-        onChange(newSize);
-      });
-    }
+
+    useWidgetsBinding().addPostFrameCallback((_) {
+      onChange(newSize);
+    });
   }
 }
 

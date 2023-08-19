@@ -1,7 +1,9 @@
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// 搜索框内容变化回调
 typedef BrnOnSearchTextChange = void Function(String content);
@@ -61,6 +63,11 @@ class BrnSearchText extends StatefulWidget {
 
   /// 用于控制键盘动作
   final TextInputAction? textInputAction;
+
+  final TextInputType? textInputType;
+
+  final List<TextInputFormatter>? inputFormatters;
+
   final TextEditingController? controller;
   final FocusNode? focusNode;
 
@@ -107,6 +114,8 @@ class BrnSearchText extends StatefulWidget {
     this.focusNode,
     this.autoFocus = false,
     this.textInputAction,
+    this.inputFormatters,
+    this.textInputType,
   }) : super(key: key);
 
   @override
@@ -149,7 +158,6 @@ class _SearchTextState extends State<BrnSearchText> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     tmpController?.dispose();
     focusNode!.removeListener(_handleFocusNodeChangeListenerTick);
@@ -202,16 +210,14 @@ class _SearchTextState extends State<BrnSearchText> {
                           autofocus: widget.autoFocus,
                           textInputAction: this.widget.textInputAction,
                           focusNode: focusNode,
-                          // 控制器属性，控制正在编辑的文本。
                           controller: textEditingController,
-                          // 光标颜色属性，绘制光标时使用的颜色。
+                          keyboardType: widget.textInputType,
+                          inputFormatters: widget.inputFormatters,
                           cursorColor: BrnThemeConfigurator.instance
                               .getConfig()
                               .commonConfig
                               .brandPrimary,
-                          // 光标宽度属性，光标的厚度，默认是2.0。
                           cursorWidth: 2.0,
-                          // 样式属性，用于正在编辑的文本的样式。
                           style: widget.textStyle ??
                               TextStyle(
                                   textBaseline: TextBaseline.alphabetic,
@@ -220,18 +226,16 @@ class _SearchTextState extends State<BrnSearchText> {
                                       .commonConfig
                                       .colorTextBase,
                                   fontSize: 16),
-                          // 装饰（`decoration`）属性，在文本字段周围显示的装饰。
                           decoration: InputDecoration(
-                            // 边框属性，装饰的容器周围绘制的形状。
-                            border: InputBorder.none,
+                            border: OutlineInputBorder(
+                                borderRadius: widget.borderRadius,
+                                borderSide: BorderSide.none),
                             contentPadding: EdgeInsets.only(left: 8, right: 6),
                             // 填充颜色属性，填充装饰容器的颜色。
                             fillColor: widget.innerColor,
                             // 是密集属性，输入子项是否是密集形式的一部分（即使用较少的垂直空间）。
                             isDense: true,
-                            // 填充属性，如果为`true`，则装饰的容器将填充fillColor颜色。
                             filled: true,
-                            // 提示样式属性，用于提示文本（`hintText`）的样式。
                             hintStyle: widget.hintStyle ??
                                 TextStyle(
                                   fontSize: 16,
@@ -239,9 +243,7 @@ class _SearchTextState extends State<BrnSearchText> {
                                   textBaseline: TextBaseline.alphabetic,
                                   color: Color(0xff999999),
                                 ),
-                            // 提示文本属性，提示字段接受哪种输入的文本。
-                            hintText: widget.hintText ?? "请输入搜索内容",
-                            // 不显示计数面板
+                            hintText: widget.hintText ?? BrnIntl.of(context).localizedResource.inputSearchTip,
                             counterText: '',
                           ),
                           // 在改变属性，当正在编辑的文本发生更改时调用。
@@ -300,7 +302,7 @@ class _SearchTextState extends State<BrnSearchText> {
                     child: Container(
                       padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                       child: Text(
-                        '取消',
+                        BrnIntl.of(context).localizedResource.cancel,
                         style: TextStyle(
                             color: BrnThemeConfigurator.instance
                                 .getConfig()

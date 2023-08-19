@@ -69,13 +69,13 @@ class BrnDeleteTag extends StatefulWidget {
       this.themeData})
       : super(key: key) {
     themeData ??= BrnTagConfig();
-    themeData = themeData!.merge(BrnTagConfig(
-        tagBackgroundColor: this.backgroundColor,
-        tagTextStyle: BrnTextStyle.withStyle(tagTextStyle)));
     themeData = BrnThemeConfigurator.instance
         .getConfig(configId: themeData!.configId)
         .tagConfig
         .merge(this.themeData);
+    themeData = themeData!.merge(BrnTagConfig(
+        tagBackgroundColor: this.backgroundColor,
+        tagTextStyle: BrnTextStyle.withStyle(tagTextStyle)));
   }
 
   @override
@@ -107,7 +107,7 @@ class _BrnDeleteTagState extends State<BrnDeleteTag> {
   /// 根据标签集合构建标签 UI
   Widget _buildContent(List<String> tags) {
     if (tags.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     List<Widget> itemList = [];
@@ -264,8 +264,9 @@ class BrnDeleteTagController {
       String result = _tags.removeAt(index);
       _asyncData();
       return result;
-    } else
+    } else {
       return null;
+    }
   }
 
   /// 删除某个具体内容的标签，成功返回 true，失败返回 false

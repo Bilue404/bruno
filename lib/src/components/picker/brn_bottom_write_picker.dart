@@ -1,7 +1,6 @@
-
-
 import 'package:bruno/src/components/picker/base/brn_picker_title_config.dart';
 import 'package:bruno/src/components/picker/brn_bottom_picker.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:flutter/material.dart';
 
@@ -15,16 +14,16 @@ typedef BrnBottomWritePickerConfirmClickCallback = Future<void>? Function(
 
 class BrnBottomWritePicker extends StatefulWidget {
   /// 弹窗左边自定义文案，默认 '取消'
-  final String leftTag;
+  final String? leftTag;
 
   /// 弹窗自定义标题
   final String title;
 
   /// 弹窗右边自定义文案，默认 '确认'
-  final String rightTag;
+  final String? rightTag;
 
   /// 输入框默认提示文案，默认'请输入'
-  final String hintText;
+  final String? hintText;
 
   /// 输入框最大能输入的字符长度，默认 200
   final int maxLength;
@@ -49,10 +48,10 @@ class BrnBottomWritePicker extends StatefulWidget {
 
   const BrnBottomWritePicker(
       {this.maxLength = 200,
-      this.hintText = "请输入",
-      this.leftTag = "取消",
+      this.hintText,
+      this.leftTag,
       this.title = "",
-      this.rightTag = "确认",
+      this.rightTag,
       this.onCancel,
       this.onConfirm,
       this.rightTextColor,
@@ -67,10 +66,10 @@ class BrnBottomWritePicker extends StatefulWidget {
 
   static void show(BuildContext context,
       {int maxLength = 200,
-      String hintText = "请输入",
-      String leftTag = "取消",
+      String? hintText,
+      String? leftTag,
       String title = "",
-      String rightTag = "确认",
+      String? rightTag,
       BrnBottomWritePickerClickCallback? onCancel,
       BrnBottomWritePickerConfirmClickCallback? onConfirm,
       bool confirmDismiss = false,
@@ -86,10 +85,10 @@ class BrnBottomWritePicker extends StatefulWidget {
             Animation<double> secondaryAnimation) {
           final Widget pageChild = BrnBottomWritePicker(
             maxLength: maxLength,
-            hintText: hintText,
-            leftTag: leftTag,
+            hintText: hintText ?? BrnIntl.of(context).localizedResource.pleaseEnter,
+            leftTag: leftTag ?? BrnIntl.of(context).localizedResource.cancel,
             title: title,
-            rightTag: rightTag,
+            rightTag: rightTag ?? BrnIntl.of(context).localizedResource.ok,
             onConfirm: onConfirm,
             onCancel: onCancel,
             rightTextColor: rightTextColor ??
@@ -117,7 +116,7 @@ class _BottomWritePickerState extends State<BrnBottomWritePicker> {
   void initState() {
     super.initState();
     if (_controller == null) {
-      if (widget.defaultText != null && widget.defaultText!.length > 0) {
+      if (widget.defaultText != null && widget.defaultText!.isNotEmpty) {
         _controller = TextEditingController.fromValue(TextEditingValue(
             text: widget.defaultText!,
             selection: TextSelection.fromPosition(TextPosition(
@@ -161,14 +160,14 @@ class _BottomWritePickerState extends State<BrnBottomWritePicker> {
                       .getConfig()
                       .commonConfig
                       .colorTextHint),
-              hintText: widget.hintText,
+              hintText: widget.hintText ?? BrnIntl.of(context).localizedResource.pleaseEnter,
             )),
       ),
       pickerTitleConfig: BrnPickerTitleConfig(
         titleContent: widget.title,
       ),
-      confirm: _buildRightTag(),
-      cancel: widget.leftTag,
+      confirm: _buildRightTag(context),
+      cancel: widget.leftTag ?? BrnIntl.of(context).localizedResource.cancel,
       onConfirmPressed: () {
         if (widget.onConfirm != null) {
           widget.onConfirm!(context, _controller?.text);
@@ -184,10 +183,10 @@ class _BottomWritePickerState extends State<BrnBottomWritePicker> {
   }
 
   //此处返回类型为dynamic，在build的时候，会判读具体类型
-  dynamic _buildRightTag() {
+  dynamic _buildRightTag(BuildContext context) {
     if (widget.rightTextColor != null) {
       return Text(
-        widget.rightTag,
+        widget.rightTag ?? BrnIntl.of(context).localizedResource.ok,
         style: TextStyle(
           fontSize: 16.0,
           color: widget.rightTextColor,

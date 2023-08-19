@@ -1,5 +1,6 @@
 import 'package:bruno/src/components/popup/brn_popup_window.dart';
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/utils/brn_multi_click_util.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
@@ -46,7 +47,7 @@ class _BrnTextButtonPanelState extends State<BrnTextButtonPanel> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.nameList.length > 0) {
+    if (widget.nameList.isNotEmpty) {
       Row row = Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -74,17 +75,17 @@ class _BrnTextButtonPanelState extends State<BrnTextButtonPanel> {
     List<Widget> showWidget = [];
     for (int i = 0, n = widgetList.length; i < n; ++i) {
       showWidget.add(Expanded(
-        child: Center(
-          child: widgetList[i],
-        ),
+        child: widgetList[i],
       ));
       if (i != n - 1) {
-        showWidget.add(Container(
-          alignment: Alignment.center,
-          height: 26,
-          width: 1,
-          color: Color(0xFFf8f8f8),
-        ));
+        showWidget.add(
+          Container(
+            alignment: Alignment.center,
+            height: 26,
+            width: 1,
+            color: Color(0xFFf8f8f8),
+          ),
+        );
       }
     }
     return showWidget;
@@ -103,7 +104,9 @@ class _BrnTextButtonPanelState extends State<BrnTextButtonPanel> {
     );
 
     return GestureDetector(
+        behavior: HitTestBehavior.opaque,
         child: Container(
+          alignment: Alignment.center,
           padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
           child: tx,
         ),
@@ -126,7 +129,7 @@ class _BrnTextButtonPanelState extends State<BrnTextButtonPanel> {
       }
 
       Text tx = Text(
-        _isExpanded ? '收起' : '更多',
+        _isExpanded ? BrnIntl.of(context).localizedResource.collapse : BrnIntl.of(context).localizedResource.more,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
@@ -140,6 +143,7 @@ class _BrnTextButtonPanelState extends State<BrnTextButtonPanel> {
           : BrunoTools.getAssetImage(BrnAsset.iconDownArrow);
 
       return GestureDetector(
+          behavior:HitTestBehavior.opaque,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -171,7 +175,7 @@ class _BrnTextButtonPanelState extends State<BrnTextButtonPanel> {
             });
           });
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 }

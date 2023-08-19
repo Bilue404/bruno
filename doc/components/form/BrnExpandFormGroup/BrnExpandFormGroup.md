@@ -36,30 +36,30 @@ group:
 
 ```dart
 BrnExpandFormGroup({
-  Key? key,
-  this.label,
-  this.title = "",
-  this.subTitle,
-  this.tipLabel,
-  this.error = "",
-  this.isEdit = true,
-  this.isRequire = false,
-  this.onRemoveTap,
-  this.onTip,
-  this.isExpand = true,
-  this.deleteLabel,
-  required this.children,
-}) : super(key: key);
+    Key? key,
+    this.label,
+    this.title = "",
+    this.subTitle,
+    this.error = "",
+    this.isEdit = true,
+    this.isRequire = false,
+    this.onRemoveTap,
+    this.onTip,
+    this.isExpand = true,
+    this.deleteLabel,
+    this.backgroundColor,
+    required this.children,
+  }) : super(key: key);
 ```
 ### 参数说明
 
 | **参数名** | **参数类型** | **描述** | **是否必填** | **默认值** | **备注** |
 | --- | --- | --- | --- | --- | --- |
+| backgroundColor | Color? | 表单项背景色 | 否 | 走主题配置默认色值 Colors.white |  |
 | label | String? | 录入项的唯一标识，主要用于录入类型页面框架中 | 否 | 无 |  |
 | type | Stirng | 录入项类型，主要用于录入类型页面框架中 | 否 | BrnInputItemType.normalGroupType | 外部可根据此字段判断表单项类型 |
 | title | String | 录入项标题 | 否 | '' |  |
 | subTitle | String? | 录入项子标题 | 否 | 无 |  |
-| tipLabel | String? | 录入项提示（问号图标&文案） 用户点击时触发onTip回调。 | 否 | 备注中类型3 | 1. 设置"空字符串"时展示问号图标 2. 设置"非空字符串"时展示问号图标&文案 3. 若不赋值或赋值为null时，不显示提示项 |
 | error | String | 录入项错误提示 | 否 | '' |  |
 | isRequire | bool | 录入项是否为必填项（展示`*`图标） 默认为 false 不必填 | 否 | false |  |
 | isEdit | bool | 录入项 是否可编辑 | 否 | true | true：可编辑，false：禁用 |

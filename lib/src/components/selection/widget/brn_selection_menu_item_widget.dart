@@ -6,10 +6,14 @@ import 'package:flutter/material.dart';
 
 typedef void ItemClickFunction();
 
+// ignore: must_be_immutable
 class BrnSelectionMenuItemWidget extends StatelessWidget {
   final String title;
   final bool isHighLight;
   final bool active;
+  final VoidCallback? itemClickFunction;
+
+  BrnSelectionConfig themeData;
   final ItemClickFunction? itemClickFunction;
   final BrnSelectionConfig themeData;
   final BrnOnCustomMenuItemBuilder? customMenuItemBuilder;

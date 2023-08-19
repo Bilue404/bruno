@@ -4,7 +4,6 @@ import 'package:bruno/src/components/picker/base/brn_picker.dart';
 import 'package:bruno/src/components/picker/time_picker/brn_date_picker_constants.dart';
 import 'package:bruno/src/components/picker/time_picker/brn_date_time_formatter.dart';
 import 'package:bruno/src/theme/brn_theme.dart';
-import 'package:bruno/src/utils/i18n/brn_date_picker_i18n.dart';
 import 'package:flutter/material.dart';
 
 /// Solar months of 31 days.
@@ -26,7 +25,6 @@ class BrnDateRangeSideWidget extends StatefulWidget {
 
   /// 时间展示格式
   final String? dateFormat;
-  final DateTimePickerLocale locale;
 
   /// 时间选择变化时回调
   final DateRangeSideValueCallback? onChange;
@@ -43,7 +41,6 @@ class BrnDateRangeSideWidget extends StatefulWidget {
     this.maxDateTime,
     this.initialStartDateTime,
     this.dateFormat = datetimeRangePickerDateFormat,
-    this.locale = datetimePickerLocaleDefault,
     this.onInitSelectChange,
     this.onChange,
   }) : super(key: key) {
@@ -212,7 +209,7 @@ class _DatePickerWidgetState extends State<BrnDateRangeSideWidget> {
     required String format,
     required ValueChanged<int> valueChanged,
   }) {
-    var globalKey;
+    GlobalKey? globalKey;
     if (_scrolledNotDay && format.contains("d")) {
       globalKey = GlobalKey();
       _scrolledNotDay = false;
@@ -260,7 +257,7 @@ class _DatePickerWidgetState extends State<BrnDateRangeSideWidget> {
         height: widget.themeData!.itemHeight,
         alignment: Alignment.center,
         child: Text(
-          DateTimeFormatter.formatDateTime(value, format, widget.locale),
+          DateTimeFormatter.formatDateTime(value, format),
           style: textStyle,
         ));
   }

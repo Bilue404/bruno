@@ -24,7 +24,15 @@ group:
 
 1. 时间选择弹框，适用于从底部弹出的情况，属于 Picker；
 
-2. 可自定义显示的时间格式：年-月-日、年-月-日-时-分。通过 dateFormat 参数进行设置，例如：dateFormat: 'yyyy年,MMMM月,dd日'
+2. 可自定义显示的时间格式。通过 `dateFormat` 参数进行设置，配合`pickerMode`参数使用，参数设置与效果如下表：
+
+   | dateFormat格式 |     效果     |
+   | :------------- | -------------- |
+   | **dateFormat**:  'yyyy年,MMMM月,dd日' <br>**pickerMode**: DateTimePickerMode.date, | ![](./img/BrnDatePickerYMD.png) |
+   | **format**: 'yyyy年,MM月,dd日,HH时:mm分:ss秒'<br/>**pickerMode**: BrnDateTimePickerMode.datetime, | ![](./img/BrnDatePickerYMDHMS.png) |
+   | **format**: 'HH:mm:ss'<br/>**pickerMode**: BrnDateTimePickerMode.time, | ![](./img/BrnDatePickerTime.png) |
+
+   
 
 ### 注意事项
 
@@ -43,7 +51,6 @@ static void showDatePicker(
   DateTime? initialDateTime,
   String? dateFormat,
   int minuteDivider: 1,
-  DateTimePickerLocale locale: DATETIME_PICKER_LOCALE_DEFAULT,
   BrnDateTimePickerMode pickerMode: BrnDateTimePickerMode.date,
   BrnPickerTitleConfig pickerTitleConfig,
   DateVoidCallback? onCancel,
@@ -64,7 +71,6 @@ static void showDatePicker(
 | initialDateTime | DateTime? | 初始选择的时间 | 否 | 当前时间 |
 | minDateTime | DateTime? | 能滚动到的最小日期 | 否 | minDateTime ≤ maxDateTime |
 | maxDateTime | DateTime? | 能滚动到的最大日期 | 否 | minDateTime ≤ maxDateTime |
-| locale | DateTimePickerLocale | 设置本地语言 | 否 | DateTimePickerLocale.zh\_cn |
 | pickerMode | BrnDateTimePickerMode | 时间选择组件显示的时间类型 | 否 | BrnDateTimePickerMode.date |
 | pickerTitleConfig | BrnPickerTitleConfig | 时间选择组件的主题样式 | 否 | BrnPickerTitleConfig.Default |
 | dateFormat | String? | 时间格式化的格式 | 是 |  |

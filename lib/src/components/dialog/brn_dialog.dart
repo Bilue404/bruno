@@ -194,7 +194,7 @@ class BrnDialog extends AlertDialog {
 
   @override
   Widget build(BuildContext context) {
-    BrnDialogConfig? defaultConfig = BrnDialogConfig();
+    BrnDialogConfig? defaultConfig = themeData ?? BrnDialogConfig();
 
     defaultConfig = BrnThemeConfigurator.instance
         .getConfig(configId: defaultConfig.configId)
@@ -227,10 +227,7 @@ class BrnDialog extends AlertDialog {
 
     children.add(Padding(
       padding: defaultConfig.dividerPadding,
-      child: SizedBox(
-        height: 0,
-        width: 0,
-      ),
+      child: const SizedBox.shrink(),
     ));
 
     if (!_isEmptyAction()) {
@@ -279,10 +276,7 @@ class BrnDialog extends AlertDialog {
           BrunoTools.getAssetImageWithBandColor("icons/icon_alter.png"));
     }
 
-    return SizedBox(
-      width: 0,
-      height: 0,
-    );
+    return const SizedBox.shrink();
   }
 
   /// 标题widget：以titleWidget为准，辅以title生成的Text。
@@ -311,13 +305,14 @@ class BrnDialog extends AlertDialog {
   /// 内容widget：以contentWidget为准，辅以message生成的Text
   Widget _generateContentWidget(
       BuildContext context, BrnDialogConfig dialogConfig) {
-    if (contentWidget != null)
+    if (contentWidget != null) {
       return Flexible(
         child: DefaultTextStyle(
           style: dialogConfig.contentTextStyle.generateTextStyle(),
           child: contentWidget!,
         ),
       );
+    }
 
     return Padding(
       padding: _configContentPadding(dialogConfig),
@@ -334,13 +329,14 @@ class BrnDialog extends AlertDialog {
   /// 警示widget：以warningWidget为准，辅以warning生成的Text
   Widget _generateWarningWidget(
       BuildContext context, BrnDialogConfig dialogConfig) {
-    if (warningWidget != null)
+    if (warningWidget != null) {
       return Flexible(
         child: DefaultTextStyle(
           style: dialogConfig.warningTextStyle.generateTextStyle(),
           child: warningWidget!,
         ),
       );
+    }
 
     return Padding(
       padding: _configWarningPadding(dialogConfig),

@@ -1,6 +1,7 @@
 import 'package:bruno/src/components/dialog/brn_dialog_utils.dart';
 import 'package:bruno/src/components/line/brn_line.dart';
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/theme/configs/brn_dialog_config.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
@@ -30,7 +31,7 @@ class BrnSingleSelectDialog extends Dialog {
   final List<String> conditions;
 
   /// 确定/提交 按钮文案，默认 '提交'
-  final String submitText;
+  final String? submitText;
 
   /// 提交按钮点击回调
   final BrnSingleSelectOnSubmitCallback? onSubmitClick;
@@ -53,37 +54,43 @@ class BrnSingleSelectDialog extends Dialog {
   /// 是否在点击时让 Diallog 消失，默认为 true
   final bool canDismissOnConfirmClick;
 
+  /// 点击关闭按钮回调
+  final VoidCallback? onCloseClick;
+
   const BrnSingleSelectDialog(
-      {this.isClose: true,
-      this.title: "",
+      {this.isClose = true,
+      this.title = "",
       this.messageText,
       this.messageWidget,
       required this.conditions,
-      this.submitText: "提交",
+      this.submitText,
       this.submitBgColor,
       this.onSubmitClick,
       this.onItemClick,
       this.checkedItem,
       this.customWidget,
+      this.onCloseClick,
       this.canDismissOnConfirmClick = true,
       this.isCustomFollowScroll = true});
 
   @override
   Widget build(BuildContext context) {
     return BrnSingleSelectDialogWidget(
-        isClose: isClose,
-        title: title,
-        messageText: messageText,
-        messageWidget: messageWidget,
-        conditions: conditions,
-        submitText: submitText,
-        onSubmitClick: onSubmitClick,
-        onItemClick: onItemClick,
-        submitBgColor: submitBgColor,
-        checkedItem: checkedItem,
-        customWidget: customWidget,
-        canDismissOnConfirmClick: canDismissOnConfirmClick,
-        isCustomFollowScroll: isCustomFollowScroll);
+      isClose: isClose,
+      title: title,
+      messageText: messageText,
+      messageWidget: messageWidget,
+      conditions: conditions,
+      submitText: submitText ?? BrnIntl.of(context).localizedResource.submit,
+      onSubmitClick: onSubmitClick,
+      onItemClick: onItemClick,
+      submitBgColor: submitBgColor,
+      checkedItem: checkedItem,
+      customWidget: customWidget,
+      canDismissOnConfirmClick: canDismissOnConfirmClick,
+      isCustomFollowScroll: isCustomFollowScroll,
+      onCloseClick: onCloseClick,
+    );
   }
 }
 
@@ -106,6 +113,9 @@ class BrnSingleSelectDialogWidget extends StatefulWidget {
 
   final bool canDismissOnConfirmClick;
 
+  /// 点击关闭按钮回调
+  final VoidCallback? onCloseClick;
+
   BrnDialogConfig? themeData;
 
   BrnSingleSelectDialogWidget(
@@ -120,6 +130,7 @@ class BrnSingleSelectDialogWidget extends StatefulWidget {
       this.onItemClick,
       this.checkedItem,
       this.customWidget,
+      this.onCloseClick,
       this.isCustomFollowScroll = true,
       this.canDismissOnConfirmClick = true,
       this.themeData}) {
@@ -187,10 +198,7 @@ class BrnSingleSelectDialogWidgetState
                                             padding: EdgeInsets.only(
                                                 left: 20, right: 20, top: 12),
                                           )
-                                        : Container(
-                                            width: 0,
-                                            height: 0,
-                                          ),
+                                        : const SizedBox.shrink(),
                                   ],
                                 ),
                               )
@@ -209,16 +217,13 @@ class BrnSingleSelectDialogWidgetState
                                           padding: EdgeInsets.only(
                                               left: 20, right: 20, top: 12),
                                         )
-                                      : Container(
-                                          width: 0,
-                                          height: 0,
-                                        ),
+                                      : const SizedBox.shrink(),
                                 ],
                               ),
                       ),
                       Padding(
                           padding: EdgeInsets.fromLTRB(20, 12, 20, 20),
-                          child: InkWell(
+                          child: GestureDetector(
                             child: Container(
                                 decoration: BoxDecoration(
                                   //背景
@@ -252,16 +257,20 @@ class BrnSingleSelectDialogWidgetState
                   widget.isClose
                       ? Positioned(
                           right: 0.0,
-                          child: InkWell(
+                          child: GestureDetector(
                               onTap: () {
-                                Navigator.of(context).pop();
+                                if (widget.onCloseClick != null) {
+                                  widget.onCloseClick!();
+                                } else {
+                                  Navigator.of(context).pop();
+                                }
                               },
                               child: Padding(
                                 padding: EdgeInsets.all(15),
                                 child: BrunoTools.getAssetImage(
                                     BrnAsset.iconPickerClose),
                               )))
-                      : Container()
+                      : const SizedBox.shrink()
                 ],
               ),
             )));
@@ -271,11 +280,12 @@ class BrnSingleSelectDialogWidgetState
   /// 若无则以 messageText 生成widget 填充，
   /// 都没设置则为空 Container
   Widget _generateContentWidget() {
-    if (widget.messageWidget != null)
+    if (widget.messageWidget != null) {
       return Padding(
         padding: EdgeInsets.only(bottom: 8, left: 20, right: 20),
         child: widget.messageWidget,
       );
+    }
 
     if (!BrunoTools.isEmpty(widget.messageText)) {
       return Padding(
@@ -286,13 +296,12 @@ class BrnSingleSelectDialogWidgetState
         ),
       );
     }
-    return Container();
+    return const SizedBox.shrink();
   }
-
 
   Widget _buildItem(BuildContext context, int index) {
     if (widget.conditions == null) {
-      return Container();
+      return const SizedBox.shrink();
     } else {
       return Container(
           child: Column(
@@ -302,7 +311,7 @@ class BrnSingleSelectDialogWidgetState
             child: Row(
               children: <Widget>[
                 Expanded(
-                    child: InkWell(
+                    child: GestureDetector(
                   onTap: () {
                     setState(() {
                       for (dynamic item in widget.conditions!) {
@@ -334,7 +343,7 @@ class BrnSingleSelectDialogWidgetState
                                   .commonConfig
                                   .colorTextBase)),
                 )),
-                InkWell(
+                GestureDetector(
                   child: Container(
                     alignment: Alignment.center,
                     height: 44,
@@ -358,7 +367,7 @@ class BrnSingleSelectDialogWidgetState
           index != widget.conditions!.length - 1
               ? Padding(
                   padding: EdgeInsets.fromLTRB(20, 0, 20, 0), child: BrnLine())
-              : Container()
+              : const SizedBox.shrink()
         ],
       ));
     }

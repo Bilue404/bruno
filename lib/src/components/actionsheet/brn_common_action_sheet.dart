@@ -1,12 +1,11 @@
-import 'dart:ui';
-
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/theme/configs/brn_action_sheet_config.dart';
 import 'package:flutter/material.dart';
 
-typedef void BrnCommonActionSheetItemClickCallBack(
+typedef BrnCommonActionSheetItemClickCallBack = void Function(
     int index, BrnCommonActionSheetItem actionItem);
-typedef bool BrnCommonActionSheetItemClickInterceptor(
+typedef BrnCommonActionSheetItemClickInterceptor =  bool Function(
     int index, BrnCommonActionSheetItem actionItem);
 
 /// 每行样式
@@ -40,7 +39,7 @@ class BrnCommonActionSheetItem {
   BrnCommonActionSheetItem(
     this.title, {
     this.desc,
-    this.actionStyle: BrnCommonActionSheetItemStyle.normal,
+    this.actionStyle = BrnCommonActionSheetItemStyle.normal,
     this.titleStyle,
     this.descStyle,
   });
@@ -107,7 +106,7 @@ class BrnCommonActionSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    EdgeInsets padding = MediaQueryData.fromWindow(window).padding;
+    EdgeInsets padding = MediaQueryData.fromView(View.of(context)).padding;
     double maxHeight =
         MediaQuery.of(context).size.height - padding.top - padding.bottom;
 
@@ -285,7 +284,7 @@ class BrnCommonActionSheet extends StatelessWidget {
         padding: EdgeInsets.only(top: 12, bottom: 12),
         child: Center(
           child: Text(
-            cancelTitle ?? "取消",
+            cancelTitle ?? BrnIntl.of(context).localizedResource.cancel,
             style: this.themeData!.cancelStyle.generateTextStyle(),
           ),
         ),

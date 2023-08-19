@@ -1,5 +1,6 @@
 import 'package:bruno/src/components/form/base/brn_form_item_type.dart';
 import 'package:bruno/src/components/form/utils/brn_form_util.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/theme/configs/brn_form_config.dart';
 import 'package:bruno/src/constants/brn_fonts_constants.dart';
@@ -14,6 +15,12 @@ import 'package:flutter/services.dart';
 ///
 // ignore: must_be_immutable
 class BrnTextInputFormItem extends StatefulWidget {
+  /// 录入项的焦点控制对象，主要用于控制焦点
+  final FocusNode? focusNode;
+
+  /// 选择键盘的完成按钮
+  final TextInputAction? textInputAction;
+
   /// 录入项的唯一标识，主要用于录入类型页面框架中
   final String? label;
 
@@ -45,6 +52,9 @@ class BrnTextInputFormItem extends StatefulWidget {
   /// 录入项 是否可编辑
   final bool isEdit;
 
+  /// 录入项 是否模糊文本（输入后*代替文本，常用于密码框） 默认值：false
+  final bool obscureText;
+
   /// 录入项不可编辑时(isEdit: false) "+"、"-"号是否可点击
   /// true: 可点击回调 false: 不可点击回调
   /// 默认值: false
@@ -63,13 +73,16 @@ class BrnTextInputFormItem extends StatefulWidget {
   final String? prefixText;
 
   /// 提示文案
-  final String hint;
+  final String? hint;
 
   /// 单位
   final String? unit;
 
   /// 输入内容类型
   final String? inputType;
+
+  /// 是否自动获取焦点
+  bool autofocus;
 
   /// 最大可输入字符数
   final int? maxCharCount;
@@ -80,6 +93,9 @@ class BrnTextInputFormItem extends StatefulWidget {
 
   final TextEditingController? controller;
 
+  /// 背景色
+  final Color? backgroundColor;
+
   /// form配置
   BrnFormItemConfig? themeData;
 
@@ -89,22 +105,27 @@ class BrnTextInputFormItem extends StatefulWidget {
     this.title = "",
     this.subTitle,
     this.tipLabel,
+    this.focusNode,
+    this.textInputAction,
     this.prefixIconType = BrnPrefixIconType.normal,
     this.error = "",
     this.isEdit = true,
+    this.obscureText = false,
     this.isRequire = false,
     this.isPrefixIconEnabled = false,
     this.onAddTap,
     this.onRemoveTap,
     this.onTip,
     this.prefixText,
-    this.hint = "请输入",
+    this.hint,
     this.unit,
     this.maxCharCount,
+    this.autofocus= false,
     this.inputType,
     this.inputFormatters,
     this.onChanged,
     this.controller,
+    this.backgroundColor,
     this.themeData,
   }) : super(key: key) {
     this.themeData ??= BrnFormItemConfig();
@@ -112,6 +133,8 @@ class BrnTextInputFormItem extends StatefulWidget {
         .getConfig(configId: this.themeData!.configId)
         .formItemConfig
         .merge(this.themeData);
+    this.themeData = this.themeData!.merge(
+        BrnFormItemConfig(backgroundColor: backgroundColor));
   }
 
   @override
@@ -132,7 +155,7 @@ class BrnTextInputFormItemState extends State<BrnTextInputFormItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: widget.themeData!.backgroundColor,
       padding: BrnFormUtil.itemEdgeInsets(widget.themeData!),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,8 +197,12 @@ class BrnTextInputFormItemState extends State<BrnTextInputFormItem> {
                 ),
                 Expanded(
                   child: TextField(
+                    autofocus: widget.autofocus,
+                    focusNode: widget.focusNode,
                     keyboardType: BrnFormUtil.getInputType(widget.inputType),
+                    textInputAction: widget.textInputAction,
                     enabled: widget.isEdit,
+                    obscureText: widget.obscureText,
                     maxLines: 1,
                     maxLength: widget.maxCharCount,
                     style: BrnFormUtil.getIsEditTextStyle(
@@ -184,7 +211,7 @@ class BrnTextInputFormItemState extends State<BrnTextInputFormItem> {
                       border: InputBorder.none,
                       hintStyle:
                           BrnFormUtil.getHintTextStyle(widget.themeData!),
-                      hintText: widget.hint,
+                      hintText: widget.hint?? BrnIntl.of(context).localizedResource.pleaseEnter,
                       counterText: "",
                       contentPadding: EdgeInsets.all(0),
                       isDense: true,

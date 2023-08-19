@@ -49,6 +49,8 @@ class BrnLinePainter extends BrnBasePainter {
 
   bool isShowXText, isShowYText;
 
+  final bool isShowXDial;
+
   final bool showPointDashLine;
 
   /// 默认的边距
@@ -96,6 +98,7 @@ class BrnLinePainter extends BrnBasePainter {
     required this.isShowHintY,
     required this.hintLineSolid,
     required this.hintLineColor,
+    this.isShowXDial = true,
     this.isShowXText = false,
     this.isShowYText = false,
   }) {
@@ -105,6 +108,7 @@ class BrnLinePainter extends BrnBasePainter {
             '折线${i - 1}和$i条线的节点数不一致');
       }
     }
+    assert(yDialMax > yDialMin, "yDialMax 应该大于 yDialMin");
   }
 
   Point selectedPoint(int lineIndex, int pointIndex) {
@@ -133,6 +137,7 @@ class BrnLinePainter extends BrnBasePainter {
       ..style = PaintingStyle.stroke;
     _init(canvas, size, xyPaint);
     _initPath(canvas, xyPaint);
+    _drawXy(canvas, xyPaint); //坐标轴
     _drawSelectPointWithIndex(canvas, xyPaint);
     _drawLine(canvas); //曲线或折线
     _drawPointDisplayText(canvas);
@@ -148,7 +153,6 @@ class BrnLinePainter extends BrnBasePainter {
     //初始化参数
     _initValue();
     _initBorder(size);
-    _drawXy(canvas, xyPaint); //坐标轴
   }
 
   void _initValue() {
@@ -195,10 +199,13 @@ class BrnLinePainter extends BrnBasePainter {
                   ((item.points[i].x - xDialMin!) /
                       (xDialMax! - xDialMin!) *
                       _fixedWidth);
-              var yPosition = _startY -
-                  ((item.points[i].y - yDialMin) /
-                      (yDialMax - yDialMin) *
-                      _fixedHeight);
+              var yPosition = _startY;
+              if (yDialMax != yDialMin) {
+                yPosition = _startY -
+                    ((item.points[i].y - yDialMin) /
+                        (yDialMax - yDialMin) *
+                        _fixedHeight);
+              }
               pointArr.add(Point(xPosition, yPosition));
             }
           } else {
@@ -270,7 +277,7 @@ class BrnLinePainter extends BrnBasePainter {
     double? x0, y0, x1, y1, t0;
     var path = Path();
     for (int i = 0; i < targetPoints.length; i++) {
-      var t1;
+      double? t1;
       var x = targetPoints[i].x;
       var y = targetPoints[i].y;
       if (x == x1 && y == y1) break;
@@ -309,36 +316,46 @@ class BrnLinePainter extends BrnBasePainter {
 
     if (lines.isNotEmpty) {
       //绘制x轴的文字部分
-      for (var item in lines) {
-        if (item.points.isNotEmpty && item.isShowXDial) {
-          _drawXRuler(canvas, paint..color = xDialColor!, item.points);
-        }
+      if (isShowXDial) {
+        _drawXRuler(canvas, paint..color = xDialColor!);
       }
     }
   }
 
   ///x轴刻度 & 辅助线
-  void _drawXRuler(Canvas canvas, Paint paint, List<BrnPointData> points) {
+  void _drawXRuler(Canvas canvas, Paint paint) {
+    double? _selectedPointX = -1.0;
+    if (lineSelectIndex >= 0 && pointSelectIndex >= 0) {
+        _selectedPointX = _linePointPositions[lineSelectIndex][pointSelectIndex].x as double? ;
+    }
     if (xDialValues != null && xDialValues!.isNotEmpty) {
       // 获取刻度长度
       for (var i = 0; i < xDialValues!.length; i++) {
+        double _xPosition = _startX +
+            (xDialValues![i].value - xDialMin!) /
+                (xDialMax! - xDialMin!) *
+                _fixedWidth;
+
+        _selectedPointX = _selectedPointX ?? 0.0;
+        bool isXRulerSelected = (_selectedPointX - _xPosition).abs() < 1.0;
+
         ///绘制x轴文本
         var tpX = TextPainter(
             textAlign: TextAlign.center,
             ellipsis: '.',
             text: TextSpan(
                 text: xDialValues![i].dialText,
-                style: xDialValues![i].dialTextStyle),
+                style: isXRulerSelected
+                    ? xDialValues![i].selectedDialTextStyle ??
+                        xDialValues![i].dialTextStyle
+                    : xDialValues![i].dialTextStyle),
             textDirection: TextDirection.ltr)
           ..layout();
         // 开始绘制刻度
         _drawXRuleByPointPosition(
             tpX,
             canvas,
-            _startX +
-                (xDialValues![i].value - xDialMin!) /
-                    (xDialMax! - xDialMin!) *
-                    _fixedWidth,
+            _xPosition,
             paint);
       }
     }
@@ -512,7 +529,7 @@ class BrnLinePainter extends BrnBasePainter {
           var length = item.points.length;
           for (var i = 0; i < length; i++) {
             if (item.points[i].pointText == null ||
-                item.points[i].pointText!.length == 0) {
+                item.points[i].pointText!.isEmpty) {
               continue;
             }
             var tpX = TextPainter(
@@ -545,7 +562,7 @@ class BrnLinePainter extends BrnBasePainter {
   bool isAdjustPosition(
       int lineIndex, Point currentPoint, List<List<Point<num>>> lines) {
     List<Point<num>> sameXPoints = getSameXValuePoints(currentPoint, lines);
-    if (sameXPoints.length > 0) {
+    if (sameXPoints.isNotEmpty) {
       if (currentPoint.distanceTo(sameXPoints[0]) == 0) {
         return lineIndex > 0;
       } else if (currentPoint.distanceTo(sameXPoints[0]) < 40) {

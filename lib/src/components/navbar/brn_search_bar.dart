@@ -1,9 +1,6 @@
-import 'package:bruno/src/components/navbar/brn_appbar.dart';
+import 'package:bindings_compatible/bindings_compatible.dart';
+import 'package:bruno/bruno.dart';
 import 'package:bruno/src/components/navbar/brn_appbar_theme.dart';
-import 'package:bruno/src/constants/brn_asset_constants.dart';
-import 'package:bruno/src/constants/brn_strings_constants.dart';
-import 'package:bruno/src/theme/brn_theme_configurator.dart';
-import 'package:bruno/src/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -31,6 +28,7 @@ typedef BrnSearchBarInputSubmitCallback = Function(String input);
 /// 该组件是[BrnAppBar]的特例包装，
 /// 实现的思路是：将[BrnAppBar.title]设置为textField
 /// 更多信息 请查看[BrnAppBar]
+//ignore: must_be_immutable
 class BrnSearchAppbar extends PreferredSize {
   /// 搜索框的文本输入控制器
   final TextEditingController? controller;
@@ -71,13 +69,14 @@ class BrnSearchAppbar extends PreferredSize {
   /// 是否默认获取焦点
   final bool autoFocus;
 
-  /// searchBar 主题
-  final Brightness brightness;
-
   /// 清空回调
   final VoidCallback? onClearTap;
 
-  const BrnSearchAppbar(
+  final SystemUiOverlayStyle? systemOverlayStyle;
+
+  BrnAppBarConfig? themeData;
+
+  BrnSearchAppbar(
       {this.controller,
       this.focusNode,
       this.leading,
@@ -90,29 +89,38 @@ class BrnSearchAppbar extends PreferredSize {
       this.dismissStyle,
       this.showDivider = true,
       this.autoFocus = true,
-      this.brightness = Brightness.dark,
       this.onClearTap,
-      this.inputTextStyle})
-      : super(child: const Center(), preferredSize: const Size(0, 0));
+      this.systemOverlayStyle,
+      this.inputTextStyle,
+      this.themeData})
+      : super(child: const Center(), preferredSize: const Size(0, 0)){
+    this.themeData ??= BrnAppBarConfig.dark();
+    this.themeData = BrnThemeConfigurator.instance
+        .getConfig(configId: this.themeData!.configId)
+        .appBarConfig
+        .merge(this.themeData)
+        .merge(BrnAppBarConfig(systemUiOverlayStyle: systemOverlayStyle));
+  }
 
   @override
   Widget get child => BrnAppBar(
-        brightness: brightness,
+        systemOverlayStyle: systemOverlayStyle,
         automaticallyImplyLeading: false,
-        title: _createSearchChild(),
+        themeData: themeData,
+        title: _createSearchChild(themeData!),
       );
 
   @override
   Size get preferredSize => Size.fromHeight(BrnAppBarTheme.appBarHeight);
 
   Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    useWidgetsBinding().addPostFrameCallback((_) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     });
     return super.build(context);
   }
 
-  Widget _createSearchChild() {
+  Widget _createSearchChild(BrnAppBarConfig themeData) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
@@ -135,13 +143,13 @@ class BrnSearchAppbar extends PreferredSize {
           dismissStyle: dismissStyle,
           showDivider: showDivider,
           clearTapCallback: onClearTap,
-          brightness: brightness,
+              themeData: themeData,
         )),
       ],
     );
   }
 }
-
+//ignore: must_be_immutable
 class _SearchInputWidget extends StatefulWidget {
   final FocusNode? focusNode;
   final TextEditingController? textEditingController;
@@ -157,7 +165,8 @@ class _SearchInputWidget extends StatefulWidget {
   final bool showDivider;
   final bool autoFocus;
   final VoidCallback? clearTapCallback;
-  final Brightness? brightness;
+
+  BrnAppBarConfig? themeData;
 
   _SearchInputWidget(
       {this.focusNode,
@@ -167,14 +176,14 @@ class _SearchInputWidget extends StatefulWidget {
       this.textEditingController,
       this.searchBarInputChangeCallback,
       this.searchBarInputSubmitCallback,
-      this.hint = '请输入搜索内容',
+      this.hint,
       this.hintStyle,
       this.inputTextStyle,
       this.showDivider = true,
       this.autoFocus = true,
       this.dismissStyle,
       this.clearTapCallback,
-      this.brightness});
+      this.themeData});
 
   @override
   __SearchInputWidgetState createState() => __SearchInputWidgetState();
@@ -198,7 +207,7 @@ class __SearchInputWidgetState extends State<_SearchInputWidget> {
 
     valueNotifier = ValueNotifier(false);
     _focusNode.addListener(_handleFocusChangeListenerTick);
-    if (widget.brightness == Brightness.dark) {
+    if (widget.themeData?.systemOverlayStyle.statusBarBrightness == Brightness.dark) {
       _defaultDividerColor = Colors.white.withOpacity(0.2);
       _defaultHintTextColor = Colors.white.withOpacity(0.4);
       _defaultInputTextColor = Colors.white;
@@ -308,7 +317,8 @@ class __SearchInputWidgetState extends State<_SearchInputWidget> {
                             color: _defaultHintTextColor,
                           ),
                       // 提示文本属性，提示字段接受哪种输入的文本。
-                      hintText: widget.hint,
+                      hintText: widget.hint ??
+                          BrnIntl.of(context).localizedResource.inputSearchTip,
                     ),
                     // 在改变属性，当正在编辑的文本发生更改时调用。
                     onChanged: (content) {
@@ -369,7 +379,7 @@ class __SearchInputWidgetState extends State<_SearchInputWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          '取消',
+                          BrnIntl.of(context).localizedResource.cancel,
                           style: widget.dismissStyle ??
                               TextStyle(
                                   color: _defaultCancelTextColor,
@@ -383,10 +393,7 @@ class __SearchInputWidgetState extends State<_SearchInputWidget> {
                       ],
                     ),
                   )
-                : Container(
-                    height: 0,
-                    width: 0,
-                  );
+                : const SizedBox.shrink();
           },
         ),
       ],
@@ -408,9 +415,6 @@ class __SearchInputWidgetState extends State<_SearchInputWidget> {
       return widget.leading;
     }
 
-    return Container(
-      height: 0,
-      width: 0,
-    );
+    return const SizedBox.shrink();
   }
 }

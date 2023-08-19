@@ -8,6 +8,7 @@ import 'package:bruno/src/components/selection/brn_selection_view.dart';
 import 'package:bruno/src/components/selection/widget/brn_selection_more_item_widget.dart';
 import 'package:bruno/src/components/toast/brn_toast.dart';
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/configs/brn_selection_config.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +95,7 @@ class _BrnMoreSelectionPageState extends State<BrnMoreSelectionPage>
       ),
       //为了解决 键盘抬起按钮的问题 将按钮移动到 此区域
       bottomNavigationBar: Container(
-        height: 80,
+        height: 80 + _getBottomAreaHeight(),
         child: Row(
           children: <Widget>[
             _buildLeftSlide(context),
@@ -245,15 +246,15 @@ class _BrnMoreSelectionPageState extends State<BrnMoreSelectionPage>
               node.filterType == BrnSelectionFilterType.dateRange ||
               node.filterType == BrnSelectionFilterType.dateRangeCalendar)) {
         if (node.customMap != null &&
-            (BrunoTools.isEmpty(node.customMap!['min']) ||
-                BrunoTools.isEmpty(node.customMap!['max']))) {
+            !BrunoTools.isEmpty(node.customMap!['min']) &&
+            !BrunoTools.isEmpty(node.customMap!['max'])) {
           if (!node.isValidRange()) {
             isValid = false;
             if (node.filterType == BrnSelectionFilterType.range) {
-              BrnToast.show('您输入的区间有误', context);
+              BrnToast.show(BrnIntl.of(context).localizedResource.enterRangeError, context);
             } else if (node.filterType == BrnSelectionFilterType.dateRange ||
                 node.filterType == BrnSelectionFilterType.dateRangeCalendar) {
-              BrnToast.show('您选择的区间有误', context);
+              BrnToast.show(BrnIntl.of(context).localizedResource.enterRangeError, context);
             }
             return;
           }
@@ -265,6 +266,10 @@ class _BrnMoreSelectionPageState extends State<BrnMoreSelectionPage>
         tmp.add(data);
       });
     }
+  }
+
+  double _getBottomAreaHeight() {
+    return MediaQuery.of(context).padding.bottom;
   }
 }
 
@@ -306,7 +311,7 @@ class MoreBottomSelectionWidget extends StatelessWidget {
                   child: BrunoTools.getAssetImage(BrnAsset.iconSelectionReset),
                 ),
                 Text(
-                  '重置',
+                  BrnIntl.of(context).localizedResource.reset,
                   style: themeData.resetTextStyle.generateTextStyle(),
                 )
               ],
@@ -315,7 +320,7 @@ class MoreBottomSelectionWidget extends StatelessWidget {
         ),
         Expanded(
             child: BrnBigMainButton(
-          title: '确定',
+          title: BrnIntl.of(context).localizedResource.ok,
           onTap: () {
             if (conformCallback != null) {
               conformCallback!(entity);

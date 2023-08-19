@@ -1,5 +1,3 @@
-
-
 import 'dart:math';
 
 import 'package:bruno/src/components/picker/base/brn_picker.dart';
@@ -8,7 +6,6 @@ import 'package:bruno/src/components/picker/base/brn_picker_title_config.dart';
 import 'package:bruno/src/components/picker/time_picker/brn_date_picker_constants.dart';
 import 'package:bruno/src/components/picker/time_picker/brn_date_time_formatter.dart';
 import 'package:bruno/src/theme/brn_theme.dart';
-import 'package:bruno/src/utils/i18n/brn_date_picker_i18n.dart';
 import 'package:flutter/material.dart';
 
 enum ColumnType { year, month, day, hour, minute, second }
@@ -21,9 +18,8 @@ class BrnDateTimeWidget extends StatefulWidget {
     this.minDateTime,
     this.maxDateTime,
     this.initDateTime,
-    this.dateFormat: datetimePickerTimeFormat,
-    this.locale: datetimePickerLocaleDefault,
-    this.pickerTitleConfig: BrnPickerTitleConfig.Default,
+    this.dateFormat = datetimePickerTimeFormat,
+    this.pickerTitleConfig = BrnPickerTitleConfig.Default,
     this.onCancel,
     this.onChange,
     this.onConfirm,
@@ -43,7 +39,6 @@ class BrnDateTimeWidget extends StatefulWidget {
   final DateTime? minDateTime, maxDateTime, initDateTime;
   final int? minuteDivider;
   final String? dateFormat;
-  final DateTimePickerLocale locale;
   final BrnPickerTitleConfig pickerTitleConfig;
 
   final DateVoidCallback? onCancel;
@@ -190,7 +185,6 @@ class _BrnDateTimeWidgetState extends State<BrnDateTimeWidget> {
         widget.pickerTitleConfig.showTitle) {
       Widget titleWidget = BrnPickerTitle(
         pickerTitleConfig: widget.pickerTitleConfig,
-        locale: widget.locale,
         onCancel: () => _onPressedCancel(),
         onConfirm: () => _onPressedConfirm(),
       );
@@ -216,19 +210,19 @@ class _BrnDateTimeWidgetState extends State<BrnDateTimeWidget> {
       /// 如果传入的时间格式不包含 月、天、小时、分钟、秒。则相对应的时间置为 1,1,0,0,0；
       DateTime dateTime = DateTime(
         _currYear,
-        (formatArr.where((format) => format.contains('M')).toList()).length > 0
+        (formatArr.where((format) => format.contains('M')).toList()).isNotEmpty
             ? _currMonth
             : 1,
-        (formatArr.where((format) => format.contains('d')).toList()).length > 0
+        (formatArr.where((format) => format.contains('d')).toList()).isNotEmpty
             ? _currDay
             : 1,
-        (formatArr.where((format) => format.contains('H')).toList()).length > 0
+        (formatArr.where((format) => format.contains('H')).toList()).isNotEmpty
             ? _currHour
             : 0,
-        (formatArr.where((format) => format.contains('m')).toList()).length > 0
+        (formatArr.where((format) => format.contains('m')).toList()).isNotEmpty
             ? _currMinute
             : 0,
-        (formatArr.where((format) => format.contains('s')).toList()).length > 0
+        (formatArr.where((format) => format.contains('s')).toList()).isNotEmpty
             ? _currSecond
             : 0,
       );
@@ -472,8 +466,7 @@ class _BrnDateTimeWidgetState extends State<BrnDateTimeWidget> {
     return Container(
       height: widget.themeData!.itemHeight,
       alignment: Alignment.center,
-      child: Text(
-          DateTimeFormatter.formatDateTime(value, format, widget.locale),
+      child: Text(DateTimeFormatter.formatDateTime(value, format),
           style: textStyle),
     );
   }

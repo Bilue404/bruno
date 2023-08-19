@@ -182,6 +182,7 @@ class BrnDefaultConfigUtils {
 
   /// 表单项默认配置
   static BrnFormItemConfig defaultFormItemConfig = BrnFormItemConfig(
+    backgroundColor: Colors.white,
     headTitleTextStyle: BrnTextStyle(
       color: defaultCommonConfig.colorTextBase,
       fontSize: defaultCommonConfig.fontSizeHead,
@@ -424,6 +425,7 @@ class BrnDefaultConfigUtils {
     iconSize: BrnAppBarTheme.iconSize,
     configId: BRUNO_CONFIG_ID,
     systemUiOverlayStyle: SystemUiOverlayStyle.dark,
+    showDefaultBottom: false,
   );
 
   /// 内容信息（两列）配置
@@ -707,7 +709,7 @@ class BrnDefaultConfigUtils {
       fontWeight: FontWeight.w600,
     ),
     appbarBackgroundColor: Colors.black,
-    appbarBrightness: Brightness.dark,
+    appbarConfig: BrnAppBarConfig.dark(),
     tabBarUnSelectedLabelStyle: BrnTextStyle(
       fontSize: 16.0,
       color: Color(0XFFCCCCCC),

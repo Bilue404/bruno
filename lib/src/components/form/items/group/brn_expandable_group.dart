@@ -4,6 +4,7 @@
 
 
 
+
 import 'package:bruno/src/components/form/utils/brn_form_util.dart';
 import 'package:bruno/src/constants/brn_asset_constants.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
@@ -46,6 +47,7 @@ class BrnExpandableGroup extends StatefulWidget {
         .getConfig(configId: this.themeData!.configId)
         .formItemConfig
         .merge(this.themeData);
+    this.themeData = themeData!.merge(BrnFormItemConfig(backgroundColor: backgroundColor));
   }
 
   /// The primary content of the list item.
@@ -108,7 +110,7 @@ class _BrnExpansionElementState extends State<BrnExpandableGroup>
   void initState() {
     super.initState();
     _isExpanded =
-        PageStorage.of(context)?.readState(context) ?? widget.initiallyExpanded;
+        PageStorage.of(context).readState(context) ?? widget.initiallyExpanded;
 
     _controller = AnimationController(
         duration: Duration(milliseconds: 200) /*_kExpand*/, vsync: this);
@@ -147,17 +149,17 @@ class _BrnExpansionElementState extends State<BrnExpandableGroup>
           if (!mounted) return;
         });
       }
-      PageStorage.of(context)?.writeState(context, _isExpanded);
+      PageStorage.of(context).writeState(context, _isExpanded);
     });
-    if (widget.onExpansionChanged != null)
+    if (widget.onExpansionChanged != null) {
       widget.onExpansionChanged!(_isExpanded);
+    }
   }
 
   Widget _buildHeader(BuildContext context, Widget? child) {
-    final Color backgroundColor = Colors.transparent;
 
     return Container(
-      color: backgroundColor,
+      color: widget.themeData!.backgroundColor,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -166,7 +168,6 @@ class _BrnExpansionElementState extends State<BrnExpandableGroup>
               _handleTap();
             },
             child: Container(
-              color: Colors.white,
               padding:
                   EdgeInsets.only(left: 20, top: 14, bottom: 14, right: 20),
               child: Row(
@@ -186,7 +187,6 @@ class _BrnExpansionElementState extends State<BrnExpandableGroup>
                           )),
                       // 副标题
                       Container(
-                        color: Colors.white,
                         alignment: Alignment.centerLeft,
                         padding: EdgeInsets.only(top: 4),
                         child: Offstage(
@@ -234,8 +234,8 @@ class _BrnExpansionElementState extends State<BrnExpandableGroup>
 
     /// title 文字颜色
     _headerColorTween
-      ..begin = theme.textTheme.subtitle1!.color
-      ..end = theme.textTheme.subtitle1!.color;
+      ..begin = theme.textTheme.titleMedium!.color
+      ..end = theme.textTheme.titleMedium!.color;
 
     /// 展开收起图标颜色
     _iconColorTween

@@ -1,5 +1,5 @@
 import 'package:bruno/src/constants/brn_asset_constants.dart';
-import 'package:bruno/src/constants/brn_strings_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/theme/configs/brn_abnormal_state_config.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
@@ -29,25 +29,28 @@ class BrnAbnormalStateUtils {
       {Image? img, BrnEmptyStatusIndexedActionClickCallback? action}) {
     if (AbnormalState.getDataFailed == status) {
       return BrnAbnormalStateWidget(
-        img: img ?? BrunoTools.getAssetImage(BrnAsset.emptyState),
-        title: BrnStrings.getDateFailed,
-        operateTexts: <String>[BrnStrings.clickPageRetry],
+        img: img ?? BrunoTools.getAssetImage(BrnAsset.noData),
+        title: BrnIntl.of(context).localizedResource.fetchErrorAndRetry,
+        operateTexts: <String>[
+          BrnIntl.of(context).localizedResource.clickPageAndRetry
+        ],
         action: action,
       );
     } else if (AbnormalState.networkConnectError == status) {
       return BrnAbnormalStateWidget(
-        img: img ?? BrunoTools.getAssetImage(BrnAsset.emptyState),
-        title: BrnStrings.networkConnectError,
-        operateTexts: <String>[BrnStrings.clickPageRetry],
+        img: img ?? BrunoTools.getAssetImage(BrnAsset.networkError),
+        title: BrnIntl.of(context).localizedResource.netErrorAndRetryLater,
+        operateTexts: <String>[
+          BrnIntl.of(context).localizedResource.clickPageAndRetry
+        ],
         action: action,
       );
     } else if (AbnormalState.noData == status) {
       return BrnAbnormalStateWidget(
-        img: img ?? BrunoTools.getAssetImage(BrnAsset.emptyState),
-        title: BrnStrings.noData,
-      );
+          img: img ?? BrunoTools.getAssetImage(BrnAsset.noData),
+          title: BrnIntl.of(context).localizedResource.noDataTip);
     } else {
-      return Container();
+      return const SizedBox.shrink();
     }
   }
 }
@@ -115,14 +118,14 @@ class BrnAbnormalStateWidget extends StatelessWidget {
     this.img,
     this.title,
     this.content,
-    this.operateAreaType: OperateAreaType.textButton,
+    this.operateAreaType = OperateAreaType.textButton,
     this.operateTexts,
     this.action,
-    this.enablePageTap: false,
+    this.enablePageTap = false,
     this.topOffset,
-    this.bgColor: Colors.white,
+    this.bgColor = Colors.white,
     this.isCenterVertical = false,
-    this.topPercent: 0.08,
+    this.topPercent = 0.08,
     this.themeData,
   }) {
     this.themeData ??= BrnAbnormalStateConfig();
@@ -169,7 +172,7 @@ class BrnAbnormalStateWidget extends StatelessWidget {
                 : EdgeInsets.only(top: topOffset ?? height * topPercent),
             child: img,
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   ///文案区域：标题
@@ -182,7 +185,7 @@ class BrnAbnormalStateWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: themeData!.titleTextStyle.generateTextStyle()),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   ///文案区域：内容
@@ -195,7 +198,7 @@ class BrnAbnormalStateWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: themeData!.contentTextStyle.generateTextStyle()),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   ///操作区域
@@ -205,7 +208,7 @@ class BrnAbnormalStateWidget extends StatelessWidget {
             padding: EdgeInsets.only(top: 36),
             child: _buildOperateContentWidget(),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   ///操作区按钮
@@ -277,6 +280,6 @@ class BrnAbnormalStateWidget extends StatelessWidget {
           child: Text(operateTexts![0],
               style: themeData!.operateTextStyle.generateTextStyle()));
     }
-    return Container();
+    return const SizedBox.shrink();
   }
 }

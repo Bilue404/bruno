@@ -1,9 +1,11 @@
+import 'package:bindings_compatible/bindings_compatible.dart';
 import 'package:bruno/src/components/line/brn_line.dart';
 import 'package:bruno/src/components/selection/bean/brn_selection_common_entity.dart';
 import 'package:bruno/src/components/selection/brn_more_selection.dart';
 import 'package:bruno/src/components/selection/brn_selection_util.dart';
 import 'package:bruno/src/components/toast/brn_toast.dart';
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/theme/configs/brn_selection_config.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
@@ -46,7 +48,7 @@ class _BrnLayerMoreSelectionPageState extends State<BrnLayerMoreSelectionPage>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    useWidgetsBinding().addPostFrameCallback((_) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     });
     _controller = AnimationController(
@@ -133,6 +135,7 @@ class _BrnLayerMoreSelectionPageState extends State<BrnLayerMoreSelectionPage>
                         .colorTextBase,
                   ),
                   onPressed: () {
+                    BrnSelectionUtil.resetSelectionDatas(widget.entityData);
                     //将选中的筛选项返回
                     _originalSelectedItemsList.forEach((data) {
                       data.isSelected = true;
@@ -143,7 +146,7 @@ class _BrnLayerMoreSelectionPageState extends State<BrnLayerMoreSelectionPage>
                 systemOverlayStyle: SystemUiOverlayStyle.dark,
                 backgroundColor: Colors.white,
                 title: Text(
-                  '选择${widget.entityData.title}',
+                  BrnIntl.of(context).localizedResource.selectTitle(widget.entityData.title),
                   style: TextStyle(
                       color: BrnThemeConfigurator.instance
                           .getConfig()
@@ -234,7 +237,7 @@ class _BrnLayerMoreSelectionPageState extends State<BrnLayerMoreSelectionPage>
               if (!this._firstList[index].isSelected) {
                 if (!BrnSelectionUtil.checkMaxSelectionCount(
                     _firstList[index])) {
-                  BrnToast.show('您选择的筛选条件数量已达上限', context);
+                  BrnToast.show(BrnIntl.of(context).localizedResource.filterConditionCountLimited, context);
                   setState(() {});
                   return;
                 } else {
@@ -340,6 +343,8 @@ class _BrnLayerMoreSelectionPageState extends State<BrnLayerMoreSelectionPage>
         padding: const EdgeInsets.only(left: 20),
         child: Text(
           name,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: textStyle,
         ),
       ),
@@ -369,7 +374,7 @@ class _BrnLayerMoreSelectionPageState extends State<BrnLayerMoreSelectionPage>
               if (!_currentFirstEntity!.children[index].isSelected) {
                 if (!BrnSelectionUtil.checkMaxSelectionCount(
                     this._currentFirstEntity!.children[index])) {
-                  BrnToast.show('您选择的筛选条件数量已达上限', context);
+                  BrnToast.show(BrnIntl.of(context).localizedResource.filterConditionCountLimited, context);
                   return;
                 }
               }
@@ -428,7 +433,7 @@ class _BrnLayerMoreSelectionPageState extends State<BrnLayerMoreSelectionPage>
 
   Widget _buildRightMultiItem(BrnSelectionEntity? entity) {
     if (entity == null) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       return Row(
         children: <Widget>[
@@ -455,7 +460,7 @@ class _BrnLayerMoreSelectionPageState extends State<BrnLayerMoreSelectionPage>
 
   Widget _buildRightSingleItem(BrnSelectionEntity? entity) {
     if (entity == null) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       return Text(entity.title,
           textAlign: TextAlign.left,

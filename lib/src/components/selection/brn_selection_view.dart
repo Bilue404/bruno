@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 /// 配置 类型为 Range 展示时，每行 tag 的数量
 /// [index] 第几个 menu
 /// [entity] index 对应的 筛选对象
-typedef BrnConfigTagCountPerRow(int index, BrnSelectionEntity entity);
+typedef BrnConfigTagCountPerRow = Function(int index, BrnSelectionEntity entity);
 
 /// [menuTitle] 设置自定义 menu 的Title文案
 /// [isMenuTitleHighLight] 设置自定义 menu 的 title 是否高亮
@@ -139,10 +139,7 @@ class BrnSelectionView extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return BrnSelectionViewState();
-  }
+  State<StatefulWidget> createState() => BrnSelectionViewState();
 }
 
 class BrnSelectionViewState extends State<BrnSelectionView> {
@@ -165,7 +162,7 @@ class BrnSelectionViewState extends State<BrnSelectionView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.originalSelectionData.length > 0) {
+    if (widget.originalSelectionData.isNotEmpty) {
       widget.originalSelectionData.forEach((f) => f.configRelationship());
       return BrnSelectionMenuWidget(
         context: context,
@@ -262,7 +259,7 @@ class BrnSelectionViewState extends State<BrnSelectionView> {
 
   void _openMore(BrnSelectionEntity entity,
       {BrnOnCustomFloatingLayerClick? onCustomFloatingLayerClick}) {
-    if (entity.children.length > 0) {
+    if (entity.children.isNotEmpty) {
       Navigator.of(context).push(PageRouteBuilder(
           opaque: false,
           pageBuilder: (context, animation, second) {

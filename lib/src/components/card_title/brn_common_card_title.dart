@@ -70,8 +70,15 @@ class BrnCommonCardTitle extends StatelessWidget {
   /// 标题下方文字 默认是深色的222222
   final Color? detailColor;
 
-  /// 内容的padding 默认上下16 左右0
+  /// 内容的padding 默认上16下12 左右0
   final EdgeInsetsGeometry? padding;
+
+  /// 标题最大行数
+  final int? titleMaxLines;
+
+  /// 标题 Overflow 展示方式，默认 TextOverflow.clip
+  /// 注意，由于 subTitleWidget 与 title 是流式布局，所以 subTitleWidget 会折叠
+  final TextOverflow titleOverflow;
 
   final BrnCardTitleConfig? themeData;
 
@@ -86,6 +93,8 @@ class BrnCommonCardTitle extends StatelessWidget {
       this.detailColor,
       this.alignment,
       this.padding,
+      this.titleMaxLines,
+      this.titleOverflow = TextOverflow.clip,
       this.themeData})
       : super(key: key);
 
@@ -93,15 +102,16 @@ class BrnCommonCardTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     BrnCardTitleConfig defaultConfig = themeData ?? BrnCardTitleConfig();
 
-    defaultConfig = defaultConfig.merge(BrnCardTitleConfig(
+    BrnCardTitleConfig cardTitleConfig = BrnCardTitleConfig(
         alignment: alignment,
         cardTitlePadding: padding as EdgeInsets?,
-        detailTextStyle: BrnTextStyle(color: detailColor)));
+        detailTextStyle: BrnTextStyle(color: detailColor));
 
     defaultConfig = BrnThemeConfigurator.instance
         .getConfig(configId: defaultConfig.configId)
         .cardTitleConfig
-        .merge(defaultConfig);
+        .merge(themeData)
+        .merge(cardTitleConfig);
 
     Widget titleContainer = Container(
       color: defaultConfig.cardBackgroundColor,
@@ -118,7 +128,7 @@ class BrnCommonCardTitle extends StatelessWidget {
     List<Widget> children = [];
     children.add(Expanded(child: _titleWidget(context, defaultConfig)));
 
-    Widget accessory = SizedBox.shrink();
+    Widget accessory = const SizedBox.shrink();
     // 左侧的文本的行高是25，那么右侧的widget最大为25
     if (this.accessoryWidget != null) {
       accessory = Container(
@@ -167,13 +177,15 @@ class BrnCommonCardTitle extends StatelessWidget {
 
   ///标题widget
   Widget _titleWidget(BuildContext context, BrnCardTitleConfig defaultConfig) {
-    Widget subWidget = SizedBox.shrink();
+    Widget subWidget = const SizedBox.shrink();
 
     if (subTitleWidget != null) {
       subWidget = _subTitleWidgetFromWidget();
     }
     var titleWidget = RichText(
       textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      maxLines: this.titleMaxLines,
+      overflow: this.titleOverflow,
       text: TextSpan(
           text: title,
           style: defaultConfig.titleWithHeightTextStyle.generateTextStyle(),

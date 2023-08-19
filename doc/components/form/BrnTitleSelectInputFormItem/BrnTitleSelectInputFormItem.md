@@ -39,42 +39,47 @@ group:
 
 ```dart
 BrnTitleSelectInputFormItem(
-  {Key? key,
-  required this.selectList,
-  this.label,
-  this.title = "",
-  this.subTitle,
-  this.tipLabel,
-  this.prefixIconType = BrnPrefixIconType.normal,
-  this.error = "",
-  this.isEdit = true,
-  this.isRequire = false,
-  this.isPrefixIconEnabled = false,
-  this.onAddTap,
-  this.onRemoveTap,
-  this.onTip,
-  this.hint = "请输入",
-  this.maxCount,
-  this.inputType = BrnInputType.TEXT,
-  this.selectedIndex = -1,
-  this.inputFormatters,
-  this.onChanged,
-  this.onTitleSelected,
-  this.controller,
-  this.themeData})
-  : super(key: key) {
-this.themeData ??= BrnFormItemConfig();
-this.themeData = BrnThemeConfigurator.instance
-    .getConfig(configId: this.themeData!.configId)
-    .formItemConfig
-    .merge(this.themeData);
-}
+      {Key? key,
+      required this.selectList,
+      this.label,
+      this.title = "",
+      this.subTitle,
+      this.tipLabel,
+      this.prefixIconType = BrnPrefixIconType.normal,
+      this.error = "",
+      this.isEdit = true,
+      this.isRequire = false,
+      this.isPrefixIconEnabled = false,
+      this.onAddTap,
+      this.onRemoveTap,
+      this.onTip,
+      this.hint,
+      this.maxCount,
+      this.inputType = BrnInputType.text,
+      this.selectedIndex = -1,
+      this.inputFormatters,
+      this.autofocus: false,
+      this.onChanged,
+      this.onTitleSelected,
+        this.backgroundColor,
+      this.controller,
+      this.themeData})
+      : super(key: key) {
+    this.themeData ??= BrnFormItemConfig();
+    this.themeData = BrnThemeConfigurator.instance
+        .getConfig(configId: this.themeData!.configId)
+        .formItemConfig
+        .merge(this.themeData);
+    this.themeData = this.themeData!.merge(
+        BrnFormItemConfig(backgroundColor: backgroundColor));
+  }
 ```
 
 ### 参数说明
 
 | **参数名** | **参数类型** | **描述** | **是否必填** | **默认值** | **备注** |
 | --- | --- | --- | --- | --- | --- |
+| backgroundColor | Color? | 表单项背景色 | 否 | 走主题配置默认色值 Colors.white |  |
 | label | String? | 录入项的唯一标识，主要用于录入类型页面框架中 | 否 | 无 |  |
 | type | Stirng | 录入项类型，主要用于录入类型页面框架中 | 否 | BrnInputItemType.textInputTitleSelectType | 外部可根据此字段判断表单项类型 |
 | title | String | 录入项标题 | 否 | '' |  |
@@ -88,10 +93,11 @@ this.themeData = BrnThemeConfigurator.instance
 | onAddTap | VoidCallback? | 点击"+"图标回调 | 否 | 无 | 见**prefixIconType**字段 |
 | onRemoveTap | VoidCallback? | 点击"-"图标回调 | 否 | 无 | 见**prefixIconType**字段 |
 | onTip | VoidCallback? | 点击"？"图标回调 | 否 | 无 | 见**tipLabel**字段 |
-| hint | String | 录入项 hint 提示 | 否 | "请输入" |  |
+| hint | String? | 录入项 hint 提示 | 否 | 默认值为国际化配置文本 "请输入" |  |
 | maxCount | int? | 最大输入字符数 | 否 | 无 |  |
 | inputType | String | 指定键盘类型 | 否 | BrnInputType.TEXT | 详见**BrnInputType**类，注意：无法通过指定键盘类型确保输入。比如不能通过指定数字键盘确保用户只输入数字。如果有要求用户只输入特定字符的需求请使用**inputFormatters**参数 |
 | inputFormatters | `List<TextInputFormatter>?` | 指定对输入数据的格式化要求 | 否 | 无 |  |
+| autofocus | bool | 是否自动获取焦点 | 否 | false |  |
 | onChanged | `ValueChanged<String>?` | 输入文本变化回调 | 否 | 无 |  |
 | controller | TextEditingController? | 文本输入controller | 否 | 无 |  |
 | selectedIndex | int | 当前Title选中索引 | 否 | -1 |  |

@@ -1,5 +1,3 @@
-
-
 import 'package:bruno/src/components/form/base/brn_form_item_type.dart';
 import 'package:bruno/src/components/form/base/input_item_interface.dart';
 import 'package:bruno/src/components/form/utils/brn_form_util.dart';
@@ -66,25 +64,29 @@ class BrnStarsFormItem extends StatefulWidget {
   /// 星值数量变化回调
   final OnBrnFormValueChanged? onChanged;
 
+  /// 背景色
+  final Color? backgroundColor;
+
   /// form配置
   BrnFormItemConfig? themeData;
 
   BrnStarsFormItem(
       {Key? key,
       this.label,
-      this.title: "",
+      this.title = "",
       this.subTitle,
       this.tipLabel,
-      this.prefixIconType: BrnPrefixIconType.normal,
-      this.error: "",
-      this.isEdit: true,
-      this.isRequire: false,
+      this.prefixIconType = BrnPrefixIconType.normal,
+      this.error = "",
+      this.isEdit = true,
+      this.isRequire = false,
       this.onAddTap,
       this.onRemoveTap,
       this.onTip,
-      this.sumStar: 5,
-      this.value: 0,
+      this.sumStar = 5,
+      this.value = 0,
       this.onChanged,
+      this.backgroundColor,
       this.themeData})
       : super(key: key) {
     this.themeData ??= BrnFormItemConfig();
@@ -92,6 +94,9 @@ class BrnStarsFormItem extends StatefulWidget {
         .getConfig(configId: this.themeData!.configId)
         .formItemConfig
         .merge(this.themeData);
+    this.themeData = this
+        .themeData!
+        .merge(BrnFormItemConfig(backgroundColor: backgroundColor));
   }
 
   @override
@@ -106,7 +111,7 @@ class BrnStarsFormItemState extends State<BrnStarsFormItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: widget.themeData!.backgroundColor,
       padding: BrnFormUtil.itemEdgeInsets(widget.themeData!),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

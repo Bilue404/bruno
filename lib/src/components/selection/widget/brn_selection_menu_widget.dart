@@ -9,15 +9,15 @@ import 'package:bruno/src/components/selection/widget/brn_selection_animate_widg
 import 'package:bruno/src/components/selection/widget/brn_selection_list_widget.dart';
 import 'package:bruno/src/components/selection/widget/brn_selection_menu_item_widget.dart';
 import 'package:bruno/src/components/selection/widget/brn_selection_range_widget.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/configs/brn_selection_config.dart';
 import 'package:bruno/src/utils/brn_event_bus.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
-import 'package:bruno/src/utils/i18n/brn_date_picker_i18n.dart';
 import 'package:flutter/material.dart';
 
-typedef bool BrnOnMenuItemClick(int index);
+typedef BrnOnMenuItemClick = bool Function(int index);
 
-typedef void BrnOnRangeSelectionConfirm(BrnSelectionEntity results,
+typedef BrnOnRangeSelectionConfirm = void Function(BrnSelectionEntity results,
     int firstIndex, int secondIndex, int thirdIndex);
 
 class BrnSelectionMenuWidget extends StatefulWidget {
@@ -234,7 +234,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
                     BrnSelectionFilterType.customHandle) {
               /// 创建 筛选组件的的入口
               OverlayEntry entry = _createEntry(widget.data[index]);
-              Overlay.of(widget.context)?.insert(entry);
+              Overlay.of(widget.context).insert(entry);
 
               listViewController.entry = entry;
               listViewController.show(index);
@@ -306,7 +306,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
       bgClickFunction: () {
         setState(() {
           menuItemActiveState[listViewController.menuIndex] = false;
-          if (entity.selectedListWithoutUnlimit().length > 0) {
+          if (entity.selectedListWithoutUnlimit().isNotEmpty) {
             menuItemHighlightState[listViewController.menuIndex] = true;
           }
           listViewController.hide();
@@ -333,7 +333,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
       bgClickFunction: () {
         setState(() {
           menuItemActiveState[listViewController.menuIndex] = false;
-          if (entity.selectedListWithoutUnlimit().length > 0) {
+          if (entity.selectedListWithoutUnlimit().isNotEmpty) {
             menuItemHighlightState[listViewController.menuIndex] = true;
           }
           listViewController.hide();
@@ -379,11 +379,11 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
         BrnSelectionUtil.currentSelectListForEntity(entity);
     List<BrnSelectionEntity> secondColumn = [];
     List<BrnSelectionEntity> thirdColumn = [];
-    if (firstColumn.length > 0) {
+    if (firstColumn.isNotEmpty) {
       for (BrnSelectionEntity firstEntity in firstColumn) {
         secondColumn
             .addAll(BrnSelectionUtil.currentSelectListForEntity(firstEntity));
-        if (secondColumn.length > 0) {
+        if (secondColumn.isNotEmpty) {
           for (BrnSelectionEntity secondEntity in secondColumn) {
             thirdColumn.addAll(
                 BrnSelectionUtil.currentSelectListForEntity(secondEntity));
@@ -392,7 +392,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
       }
     }
 
-    if (firstColumn.length == 0 || firstColumn.length > 1) {
+    if (firstColumn.isEmpty || firstColumn.length > 1) {
       title = entity.title;
     } else {
       /// 第一列选中了一个，为【不限】类型，使用上一级别的名字展示。
@@ -405,7 +405,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
               BrnSelectionFilterType.dateRangeCalendar) {
         title = _getDateAndRangeTitle(firstColumn, entity);
       } else {
-        if (secondColumn.length == 0 || secondColumn.length > 1) {
+        if (secondColumn.isEmpty || secondColumn.length > 1) {
           title = firstColumn[0].title;
         } else {
           /// 第二列选中了一个，为【不限】类型，使用上一级别的名字展示。
@@ -419,7 +419,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
                   BrnSelectionFilterType.dateRangeCalendar) {
             title = _getDateAndRangeTitle(secondColumn, firstColumn[0]);
           } else {
-            if (thirdColumn.length == 0 || thirdColumn.length > 1) {
+            if (thirdColumn.isEmpty || thirdColumn.length > 1) {
               title = secondColumn[0].title;
             } else {
               /// 第三列选中了一个，为【不限】类型，使用上一级别的名字展示。
@@ -479,7 +479,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
           list[0].customMap!['min']);
       if (minDate != null) {
         minDateTime = DateTimeFormatter.formatDate(
-            minDate, 'yyyy年MM月dd日', DateTimePickerLocale.zh_cn);
+            minDate, BrnIntl.of(context).localizedResource.dateFormatYYYYMMDD);
       }
     }
     if (list[0].customMap != null &&
@@ -489,7 +489,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
           list[0].customMap!['max']);
       if (maxDate != null) {
         maxDateTime = DateTimeFormatter.formatDate(
-            maxDate, 'yyyy年MM月dd日', DateTimePickerLocale.zh_cn);
+            maxDate, BrnIntl.of(context).localizedResource.dateFormatYYYYMMDD);
       }
     }
     return '$minDateTime-$maxDateTime';
@@ -501,8 +501,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
     title = msDateTime != null
         ? DateTimeFormatter.formatDate(
             DateTime.fromMillisecondsSinceEpoch(msDateTime),
-            'yyyy年MM月dd日',
-            DateTimePickerLocale.zh_cn)
+            BrnIntl.of(context).localizedResource.dateFormatYYYYMMDD)
         : list[0].title;
     return title;
   }
@@ -529,7 +528,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
 
   void _refreshSelectionMenuTitle(int index, BrnSelectionEntity entity) {
     if (entity.filterType == BrnSelectionFilterType.more) {
-      if (entity.allSelectedList().length > 0) {
+      if (entity.allSelectedList().isNotEmpty) {
         menuItemHighlightState[index] = true;
       } else {
         menuItemHighlightState[index] = false;
@@ -540,7 +539,7 @@ class _BrnSelectionMenuWidgetState extends State<BrnSelectionMenuWidget> {
     if (title != null) {
       titles[index] = title;
     }
-    if (entity.selectedListWithoutUnlimit().length > 0) {
+    if (entity.selectedListWithoutUnlimit().isNotEmpty) {
       menuItemHighlightState[index] = true;
     } else if (!BrunoTools.isEmpty(entity.customTitle)) {
       menuItemHighlightState[index] = entity.isCustomTitleHighLight;

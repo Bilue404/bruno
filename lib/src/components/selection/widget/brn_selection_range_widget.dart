@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:bruno/src/components/button/brn_big_main_button.dart';
 import 'package:bruno/src/components/calendar/brn_calendar_view.dart';
@@ -13,22 +12,18 @@ import 'package:bruno/src/components/selection/widget/brn_selection_range_tag_wi
 import 'package:bruno/src/components/tabbar/normal/brn_tab_bar.dart';
 import 'package:bruno/src/components/toast/brn_toast.dart';
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/configs/brn_selection_config.dart';
 import 'package:bruno/src/utils/brn_event_bus.dart';
 import 'package:bruno/src/utils/brn_text_util.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
 
-typedef void BrnOnRangeSelectionBgClick();
-
 class BrnRangeSelectionGroupWidget extends StatefulWidget {
-  static final double screenWidth =
-      window.physicalSize.width / window.devicePixelRatio;
-
   final BrnSelectionEntity entity;
   final double maxContentHeight;
   final bool showSelectedCount;
-  final BrnOnRangeSelectionBgClick? bgClickFunction;
+  final VoidCallback? bgClickFunction;
   final BrnOnRangeSelectionConfirm? onSelectionConfirm;
 
   final int? rowCount;
@@ -63,6 +58,7 @@ class _BrnRangeSelectionGroupWidgetState
   int _firstIndex = -1;
   int _secondIndex = -1;
   int totalLevel = 0;
+  late double _screenWidth;
 
   late TabController _tabController;
 
@@ -73,6 +69,7 @@ class _BrnRangeSelectionGroupWidgetState
 
   @override
   void initState() {
+    _screenWidth = View.of(context).physicalSize.width / View.of(context).devicePixelRatio;
     _initData();
     _tabController = TabController(vsync: this, length: _firstList.length);
     if (_firstIndex >= 0) {
@@ -228,13 +225,13 @@ class _BrnRangeSelectionGroupWidgetState
     ///如果指定展示列，则按照指定列展示，否则动态计算宽度。最大不超过四列。
     if (widget.rowCount == null) {
       int oneCountTagWidth =
-          (BrnRangeSelectionGroupWidget.screenWidth - 40 - 12 * (1 - 1)) ~/ 1;
+          (_screenWidth - 40 - 12 * (1 - 1)) ~/ 1;
       int twoCountTagWidth =
-          (BrnRangeSelectionGroupWidget.screenWidth - 40 - 12 * (2 - 1)) ~/ 2;
+          (_screenWidth - 40 - 12 * (2 - 1)) ~/ 2;
       int threeCountTagWidth =
-          (BrnRangeSelectionGroupWidget.screenWidth - 40 - 12 * (3 - 1)) ~/ 3;
+          (_screenWidth - 40 - 12 * (3 - 1)) ~/ 3;
       int fourCountTagWidth =
-          (BrnRangeSelectionGroupWidget.screenWidth - 40 - 12 * (4 - 1)) ~/ 4;
+          (_screenWidth - 40 - 12 * (4 - 1)) ~/ 4;
       if (maxWidthSize.width > twoCountTagWidth) {
         tagWidth = oneCountTagWidth;
       } else if (threeCountTagWidth < maxWidthSize.width &&
@@ -247,13 +244,13 @@ class _BrnRangeSelectionGroupWidgetState
         tagWidth = fourCountTagWidth;
       }
     } else {
-      tagWidth = (BrnRangeSelectionGroupWidget.screenWidth -
+      tagWidth = (_screenWidth -
               40 -
               12 * (widget.rowCount! - 1)) ~/
           widget.rowCount!;
     }
 
-    var tagContainer = (tagFilterList.length) > 0
+    var tagContainer = tagFilterList.isNotEmpty
         ? Container(
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 20),
@@ -275,7 +272,7 @@ class _BrnRangeSelectionGroupWidgetState
           )
         : Container();
 
-    var content;
+    Widget? content;
     for (BrnSelectionEntity item in subFilterList) {
       if (item.filterType == BrnSelectionFilterType.range) {
         content = BrnSelectionRangeItemWidget(
@@ -362,7 +359,7 @@ class _BrnRangeSelectionGroupWidgetState
       padding: EdgeInsets.fromLTRB(8, 11, 20, 11),
       child: Row(
         children: <Widget>[
-          InkWell(
+          GestureDetector(
             child: Container(
               padding: EdgeInsets.only(left: 12, right: 20),
               child: Column(
@@ -374,7 +371,7 @@ class _BrnRangeSelectionGroupWidgetState
                         BrunoTools.getAssetImage(BrnAsset.iconSelectionReset),
                   ),
                   Text(
-                    '重置',
+                    BrnIntl.of(context).localizedResource.reset,
                     style: widget.themeData.resetTextStyle.generateTextStyle(),
                   )
                 ],
@@ -384,7 +381,7 @@ class _BrnRangeSelectionGroupWidgetState
           ),
           Expanded(
             child: BrnBigMainButton(
-              title: '确定',
+              title: BrnIntl.of(context).localizedResource.ok,
               onTap: () {
                 _confirmButtonClickEvent();
               },
@@ -407,7 +404,7 @@ class _BrnRangeSelectionGroupWidgetState
           widget.entity.children[_tabController.index].children;
       List<BrnSelectionEntity> selectItems =
           subFilterList.where((f) => f.isSelected).toList();
-      if (selectItems.length > 0) {
+      if (selectItems.isNotEmpty) {
         _firstList[_tabController.index].isSelected = true;
       } else {
         _firstList[_tabController.index].isSelected = false;
@@ -425,12 +422,12 @@ class _BrnRangeSelectionGroupWidgetState
         if (!rangeEntity.isValidRange()) {
           FocusScope.of(context).requestFocus(FocusNode());
           if (rangeEntity.filterType == BrnSelectionFilterType.range) {
-            BrnToast.show('您输入的区间有误', context);
+            BrnToast.show(BrnIntl.of(context).localizedResource.enterRangeError, context);
           } else if (rangeEntity.filterType ==
                   BrnSelectionFilterType.dateRange ||
               rangeEntity.filterType ==
                   BrnSelectionFilterType.dateRangeCalendar) {
-            BrnToast.show('您选择的区间有误', context);
+            BrnToast.show(BrnIntl.of(context).localizedResource.selectRangeError, context);
           }
           return;
         }
@@ -595,7 +592,7 @@ class _BrnRangeSelectionGroupWidgetState
             f.isSelected)
         .toList();
 
-    if (ranges.length > 0) {
+    if (ranges.isNotEmpty) {
       return ranges[0];
     }
     return null;
@@ -657,9 +654,7 @@ class _BrnRangeSelectionGroupWidgetState
             .where((_) =>
                 _.filterType == BrnSelectionFilterType.date ||
                 _.filterType == BrnSelectionFilterType.dateRangeCalendar)
-            .toList()
-            .length >
-        0;
+            .toList().isNotEmpty;
 
     /// 查找第二层级
     if (!hasCalendarItem) {

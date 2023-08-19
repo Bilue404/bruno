@@ -1,7 +1,7 @@
 import 'package:bruno/src/components/dialog/brn_content_export_dialog.dart';
-import 'package:bruno/src/components/dialog/brn_dialog.dart';
 import 'package:bruno/src/components/line/brn_line.dart';
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class MultiSelectItem {
   /// 是否选中
   bool isChecked;
 
-  MultiSelectItem(this.code, this.content, {this.isChecked: false});
+  MultiSelectItem(this.code, this.content, {this.isChecked = false});
 }
 
 /// 屏幕中间弹出多选列表弹框
@@ -45,7 +45,7 @@ class BrnMultiSelectDialog extends Dialog {
   final List<MultiSelectItem> conditions;
 
   /// 操作按钮文案
-  final String submitText;
+  final String? submitText;
 
   /// 点击操作按钮
   final BrnMultiSelectDialogClickSubmitCallback? onSubmitClick;
@@ -73,7 +73,7 @@ class BrnMultiSelectDialog extends Dialog {
     this.messageWidget,
     this.customWidget,
     this.isCustomFollowScroll = true,
-    this.submitText = "提交",
+    this.submitText,
     this.submitBgColor,
     this.onSubmitClick,
     this.onItemClick,
@@ -90,7 +90,7 @@ class BrnMultiSelectDialog extends Dialog {
         customWidget: customWidget,
         isCustomFollowScroll: isCustomFollowScroll,
         conditions: conditions,
-        submitText: submitText,
+        submitText: submitText ?? BrnIntl.of(context).localizedResource.submit,
         onSubmitClick: onSubmitClick,
         onItemClick: onItemClick,
         submitBgColor: submitBgColor ??
@@ -162,6 +162,7 @@ class MultiSelectPickerWidgetState extends State<MultiSelect> {
   Widget build(BuildContext context) {
     return BrnContentExportWidget(
       Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _generateContentWidget(),
           Container(
@@ -182,10 +183,7 @@ class MultiSelectPickerWidgetState extends State<MultiSelect> {
                                 padding: EdgeInsets.only(
                                     left: 20, right: 20, top: 12),
                               )
-                            : Container(
-                                width: 0,
-                                height: 0,
-                              ),
+                            : const SizedBox.shrink(),
                       ],
                     ),
                   )
@@ -203,10 +201,7 @@ class MultiSelectPickerWidgetState extends State<MultiSelect> {
                               padding:
                                   EdgeInsets.only(left: 20, right: 20, top: 12),
                             )
-                          : Container(
-                              width: 0,
-                              height: 0,
-                            ),
+                          : const SizedBox.shrink(),
                     ],
                   ),
           )
@@ -235,22 +230,27 @@ class MultiSelectPickerWidgetState extends State<MultiSelect> {
   /// 若无则以 messageText 生成widget 填充，
   /// 都没设置则为空 Container
   Widget _generateContentWidget() {
-    if (widget.messageWidget != null)
+    if (widget.messageWidget != null) {
       return Padding(
         padding: EdgeInsets.only(bottom: 8, left: 20, right: 20),
         child: widget.messageWidget,
       );
+    }
 
     if (!BrunoTools.isEmpty(widget.messageText)) {
       return Padding(
         padding: EdgeInsets.only(bottom: 8, left: 20, right: 20),
         child: Text(
           widget.messageText!,
-          style: cContentTextStyle,
+          style: BrnThemeConfigurator.instance
+              .getConfig()
+              .dialogConfig
+              .contentTextStyle
+              .generateTextStyle(),
         ),
       );
     }
-    return Container();
+    return const SizedBox.shrink();
   }
 
   Widget _buildItem(BuildContext context, int index) {
@@ -301,7 +301,7 @@ class MultiSelectPickerWidgetState extends State<MultiSelect> {
                 ? Padding(
                     padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: BrnLine())
-                : Container()
+                : const SizedBox.shrink()
           ],
         ));
   }

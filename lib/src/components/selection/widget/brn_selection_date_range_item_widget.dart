@@ -4,14 +4,11 @@ import 'package:bruno/src/components/picker/time_picker/date_picker/brn_date_wid
 import 'package:bruno/src/components/selection/bean/brn_selection_common_entity.dart';
 import 'package:bruno/src/components/selection/controller/brn_selection_view_date_picker_controller.dart';
 import 'package:bruno/src/components/selection/widget/brn_selection_datepicker_animate_widget.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/configs/brn_selection_config.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
-import 'package:bruno/src/utils/i18n/brn_date_picker_i18n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-typedef void OnRangeChangedFunction(String minInput, String maxInput);
-typedef void OnTappedFunction();
 
 const String _defaultDateFormat = 'yyyy年MM月dd日';
 
@@ -31,7 +28,7 @@ class BrnSelectionDateRangeItemWidget extends StatefulWidget {
   final TextEditingController minTextEditingController;
   final TextEditingController maxTextEditingController;
 
-  final OnTappedFunction? onTapped;
+  final VoidCallback? onTapped;
 
   BrnSelectionConfig themeData;
 
@@ -58,13 +55,13 @@ class _BrnSelectionDateRangeItemWidgetState
 
   @override
   void initState() {
-    var minDateTime;
+    DateTime? minDateTime;
     if (widget.item.customMap != null &&
         widget.item.customMap!['min'] != null) {
       minDateTime = DateTimeFormatter.convertIntValueToDateTime(
           widget.item.customMap!['min']);
     }
-    var maxDateTime;
+    DateTime? maxDateTime;
     if (widget.item.customMap != null &&
         widget.item.customMap!['max'] != null) {
       maxDateTime = DateTimeFormatter.convertIntValueToDateTime(
@@ -72,11 +69,11 @@ class _BrnSelectionDateRangeItemWidgetState
     }
     widget.minTextEditingController.text = minDateTime != null
         ? DateTimeFormatter.formatDate(
-            minDateTime, widget.dateFormat, DateTimePickerLocale.zh_cn)
+            minDateTime, widget.dateFormat)
         : '';
     widget.maxTextEditingController.text = maxDateTime != null
         ? DateTimeFormatter.formatDate(
-            maxDateTime, widget.dateFormat, DateTimePickerLocale.zh_cn)
+            maxDateTime, widget.dateFormat)
         : '';
     super.initState();
   }
@@ -93,7 +90,7 @@ class _BrnSelectionDateRangeItemWidgetState
                     margin: EdgeInsets.only(bottom: 5),
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      widget.item.title.isEmpty ? '自定义区间' : widget.item.title,
+                      widget.item.title.isEmpty ? BrnIntl.of(context).localizedResource.customRange : widget.item.title,
                       textAlign: TextAlign.left,
                       style: widget.themeData.rangeTitleTextStyle
                           .generateTextStyle(),
@@ -105,7 +102,7 @@ class _BrnSelectionDateRangeItemWidgetState
                 getDateRangeTextField(false),
                 Container(
                   child: Text(
-                    "至",
+                    BrnIntl.of(context).localizedResource.to,
                     style: widget.themeData.inputTextStyle.generateTextStyle(),
                   ),
                 ),
@@ -142,7 +139,7 @@ class _BrnSelectionDateRangeItemWidgetState
         textAlign: TextAlign.center,
         decoration: InputDecoration(
           hintStyle: widget.themeData.hintTextStyle.generateTextStyle(),
-          hintText: (!isMax ? '开始日期' : '结束日期'),
+          hintText: (!isMax ? BrnIntl.of(context).localizedResource.startDate : BrnIntl.of(context).localizedResource.endDate),
           enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
             width: 1,
@@ -198,14 +195,14 @@ class _BrnSelectionDateRangeItemWidgetState
       pickerTitleConfig: BrnPickerTitleConfig(
           showTitle: true,
           // UI 规范规定高度按照比例设置，UI稿的比利为 240 / 812
-          titleContent: isMax ? '请选择结束时间' : '请选择开始时间'),
+          titleContent: isMax ? BrnIntl.of(context).localizedResource.selectEndDate : BrnIntl.of(context).localizedResource.selectStartDate),
       onCancel: () {
         closeSelectionPopupWindow();
       },
       onConfirm: (DateTime selectedDate, List<int> selectedIndex) {
         widget.item.isSelected = true;
         String selectedDateStr = DateTimeFormatter.formatDate(
-            selectedDate, widget.dateFormat, DateTimePickerLocale.zh_cn);
+            selectedDate, widget.dateFormat);
         if (isMax) {
           widget.maxTextEditingController.text = selectedDateStr;
         } else {
@@ -226,7 +223,7 @@ class _BrnSelectionDateRangeItemWidgetState
       },
     );
     OverlayEntry entry = _createDatePickerEntry(context, content);
-    Overlay.of(context)?.insert(entry);
+    Overlay.of(context).insert(entry);
     _datePickerController.entry = entry;
     _datePickerController.show();
   }
@@ -256,7 +253,6 @@ class _BrnSelectionDateRangeItemWidgetState
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _datePickerController.hide();
     super.dispose();
   }

@@ -42,9 +42,13 @@ class ListItem extends StatefulWidget {
   _ListItemState createState() => _ListItemState();
 }
 
-class _ListItemState extends State<ListItem> {
+class _ListItemState extends State<ListItem> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return TextButton(
       onPressed: widget.onPressed,
       style: ButtonStyle(

@@ -45,7 +45,7 @@ class BrnAppraiseHeader extends StatelessWidget {
         return _centerHeader();
       }
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget _centerHeader() {
@@ -96,7 +96,7 @@ class BrnAppraiseHeader extends StatelessWidget {
                 ),
               ),
             ),
-            InkWell(
+            GestureDetector(
               onTap: () {
                 if (cancelCallBack != null) {
                   cancelCallBack!(context);

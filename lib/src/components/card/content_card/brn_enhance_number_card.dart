@@ -1,5 +1,3 @@
-
-
 import 'package:bruno/src/constants/brn_asset_constants.dart';
 import 'package:bruno/src/constants/brn_strings_constants.dart';
 import 'package:bruno/src/theme/brn_theme.dart';
@@ -101,18 +99,12 @@ class BrnEnhanceNumberCard extends StatelessWidget {
         .enhanceNumberCardConfig
         .merge(defaultConfig);
 
-    if (itemChildren == null || itemChildren!.length == 0) {
-      return Container(
-        height: 0,
-        width: 0,
-      );
+    if (itemChildren == null || itemChildren!.isEmpty) {
+      return const SizedBox.shrink();
     }
     return LayoutBuilder(
       builder: (context, constraints) {
-        Widget contentWidget = Container(
-          height: 0,
-          width: 0,
-        );
+        Widget contentWidget = const SizedBox.shrink();
         // 容错显示的行数 显示三行
         int count = rowCount;
         if (rowCount <= 0 || rowCount > itemChildren!.length) {
@@ -151,13 +143,10 @@ class BrnEnhanceNumberCard extends StatelessWidget {
                       )),
                       //分割线的显示规则是：固定高度47
                       //                item之间显示，最后一个不显示
-                      Visibility(
-                        visible: !allCondition,
-                        child: Container(
-                          height: 47,
-                          width: defaultConfig.dividerWidth,
-                          color: defaultConfig.commonConfig.dividerColorBase,
-                        ),
+                      Container(
+                        height: 47,
+                        width: !allCondition ? defaultConfig.dividerWidth : 0,
+                        color: defaultConfig.commonConfig.dividerColorBase,
                       ),
                     ],
                   ));
@@ -246,44 +235,44 @@ class BrnEnhanceNumberCard extends StatelessWidget {
       style: config.descTextStyle.generateTextStyle(),
       overflow: TextOverflow.ellipsis,
     );
+    Widget? icon;
     if (model.iconTapCallBack != null) {
-      Widget icon = BrunoTools.getAssetSizeImage(BrnAsset.iconQuestion, 14, 14);
+      icon = BrunoTools.getAssetSizeImage(BrnAsset.iconQuestion, 14, 14);
 
       if (model.numberInfoIcon == BrnNumberInfoIcon.arrow) {
         icon = BrunoTools.getAssetSizeImage(BrnAsset.iconRightArrow, 14, 14);
       }
       debugPrint('${tp.height}');
       debugPrint(model.title);
-      text = Row(
-        mainAxisAlignment: itemTextAlign == TextAlign.center
-            ? MainAxisAlignment.center
-            : (itemTextAlign == TextAlign.right
-                ? MainAxisAlignment.end
-                : MainAxisAlignment.start),
-        crossAxisAlignment:
-            tp.height > 22 ? CrossAxisAlignment.end : CrossAxisAlignment.center,
-        children: <Widget>[
-          Flexible(
-            child: text,
-          ),
+    }
+    text = Row(
+      mainAxisAlignment: itemTextAlign == TextAlign.center
+          ? MainAxisAlignment.center
+          : (itemTextAlign == TextAlign.right
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start),
+      crossAxisAlignment:
+          tp.height > 22 ? CrossAxisAlignment.end : CrossAxisAlignment.center,
+      children: <Widget>[
+        Flexible(
+          child: text,
+        ),
+        if (icon != null)
           GestureDetector(
             onTap: () {
               model.iconTapCallBack!(model);
             },
             child: icon,
           )
-        ],
-      );
-    }
+      ],
+    );
+
     return text;
   }
 
   Widget _getPreWidget(String? preDesc, BrnEnhanceNumberCardConfig config) {
     if (preDesc == null || preDesc.isEmpty) {
-      return Container(
-        height: 0,
-        width: 0,
-      );
+      return const SizedBox.shrink();
     }
     return Padding(
       padding: const EdgeInsets.only(left: 1),
@@ -302,10 +291,7 @@ class BrnEnhanceNumberCard extends StatelessWidget {
 
   Widget _getLastWidget(String? lastDesc, BrnEnhanceNumberCardConfig config) {
     if (lastDesc == null || lastDesc.isEmpty) {
-      return Container(
-        height: 0,
-        width: 0,
-      );
+      return const SizedBox.shrink();
     }
     return Padding(
       padding: const EdgeInsets.only(left: 1, top: 0),

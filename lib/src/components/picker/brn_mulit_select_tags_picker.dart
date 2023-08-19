@@ -1,10 +1,8 @@
-
-
 import 'package:bruno/src/components/picker/base/brn_picker_title_config.dart';
 import 'package:bruno/src/components/picker/brn_tags_common_picker.dart';
 import 'package:bruno/src/components/picker/brn_tags_picker_config.dart';
-import 'package:bruno/src/theme/brn_theme_configurator.dart';
-import 'package:bruno/src/theme/configs/brn_picker_config.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
+import 'package:bruno/src/theme/brn_theme.dart';
 import 'package:flutter/material.dart';
 
 ///样式的枚举类型
@@ -107,7 +105,7 @@ class BrnMultiSelectTagsPicker extends CommonTagsPicker {
       return Container(
         height: 200,
         child: Center(
-          child: Text('未配置tags数据'),
+          child: Text(BrnIntl.of(context).localizedResource.noTagDataTip),
         ),
       );
     }
@@ -217,39 +215,43 @@ class BrnMultiSelectTagsPicker extends CommonTagsPicker {
 
   ///流式布局
   Widget _buildWrapViewWidget(BuildContext context, VoidCallback? onUpdate) {
-    Color selectedTagTitleColor = this.tagPickerConfig.selectedTagTitleColor ??
-        BrnThemeConfigurator.instance.getConfig().commonConfig.brandPrimary;
-    Color tagTitleColor = this.tagPickerConfig.tagTitleColor ??
-        BrnThemeConfigurator.instance
-            .getConfig()
-            .commonConfig
-            .colorTextImportant;
-    Color tagBackgroundColor =
-        this.tagPickerConfig.tagBackgroudColor ?? Color(0xffF8F8F8);
-    Color selectedTagBackgroundColor =
-        this.tagPickerConfig.selectedTagBackgroudColor ??
-            BrnThemeConfigurator.instance
-                .getConfig()
-                .commonConfig
-                .brandPrimary
-                .withAlpha(0x14);
+    BrnTagConfig tagConfig = BrnThemeConfigurator.instance
+        .getConfig(configId: themeData!.configId)
+        .tagConfig
+        .merge(BrnTagConfig());
+    tagConfig = tagConfig.merge(BrnTagConfig(
+        selectTagTextStyle: BrnTextStyle(
+            height: 1,
+            color: this.tagPickerConfig.selectedTagTitleColor,
+            fontSize: this.tagPickerConfig.tagTitleFontSize,
+            fontWeight: FontWeight.w600),
+        tagTextStyle: BrnTextStyle(
+            height: 1,
+            color: this.tagPickerConfig.tagTitleColor,
+            fontSize: this.tagPickerConfig.tagTitleFontSize,
+            fontWeight: FontWeight.w400),
+        tagBackgroundColor: this.tagPickerConfig.tagBackgroudColor,
+        selectedTagBackgroundColor:
+            this.tagPickerConfig.selectedTagBackgroudColor));
 
     return Container(
         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         child: Wrap(
           spacing: 15.0,
+          runSpacing: 15.0,
           children: this._sourceTags.map((choice) {
             bool selected = choice.isSelect;
-            Color titleColor = selected ? selectedTagTitleColor : tagTitleColor;
-
+            Color titleColor = selected
+                ? tagConfig.selectTagTextStyle.color!
+                : tagConfig.tagTextStyle.color!;
             EdgeInsets edgeInsets = this.tagPickerConfig.chipPadding ??
                 EdgeInsets.only(top: 9.0, left: 10.0, right: 10, bottom: 11.0);
             return ChoiceChip(
               selected: selected,
               padding: edgeInsets,
               pressElevation: 0,
-              backgroundColor: tagBackgroundColor,
-              selectedColor: selectedTagBackgroundColor,
+              backgroundColor: tagConfig.tagBackgroundColor,
+              selectedColor: tagConfig.selectedTagBackgroundColor,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(2.0)),
               label: Text(
@@ -264,7 +266,7 @@ class BrnMultiSelectTagsPicker extends CommonTagsPicker {
                     fontSize: this.tagPickerConfig.tagTitleFontSize),
               ),
               onSelected: (bool value) {
-                if (_selectedTags.length > this.maxSelectItemCount &&
+                if (_selectedTags.length >= this.maxSelectItemCount &&
                     this.maxSelectItemCount > 0 &&
                     value == true) {
                   if (this.onMaxSelectClick != null) {

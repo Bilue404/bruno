@@ -1,7 +1,7 @@
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme.dart';
 import 'package:bruno/src/utils/brn_rich_text.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
@@ -76,7 +76,7 @@ class BrnPairInfoTable extends StatefulWidget {
   final bool isValueAlign;
 
   /// TableCell 默认垂直对齐方式， 默认值为 [TableCellVerticalAlignment.baseline]
-  /// 当 [BrnInfoModal.valuePart] 为自定义 Widget 时，可设置该参数调整对齐方式，仅在 
+  /// 当 [BrnInfoModal.valuePart] 为自定义 Widget 时，可设置该参数调整对齐方式，仅在
   /// [isValueAlign] 为 true 时设置才生效
   final TableCellVerticalAlignment defaultVerticalAlignment;
 
@@ -103,6 +103,9 @@ class BrnPairInfoTable extends StatefulWidget {
   ///可以参考[_MaxWrapTableWidth]实现自定义的展示规则，指定长度等
   final TableColumnWidth? customKeyWidth;
 
+  /// Table 展开收起状态变化的回调
+  final ValueChanged<bool>? onFolded;
+
   BrnPairInfoTable({
     Key? key,
     required this.children,
@@ -112,8 +115,9 @@ class BrnPairInfoTable extends StatefulWidget {
     this.rowDistance,
     this.itemSpacing,
     this.isFolded = true,
-    this.themeData,
+    this.onFolded,
     this.customKeyWidth,
+    this.themeData
   });
 
   @override
@@ -140,7 +144,7 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
   BrnInfoModal? indexModal;
 
   // 是否具备展开收起功能 如果不展示则显示全部
-  bool canExpanded = false;
+  bool _canFold = false;
 
   late BrnPairInfoTableConfig themeData;
 
@@ -161,12 +165,12 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
         widget.expandAtIndex >= (widget.children.length - 1)) {
       _expandAtIndex = -1;
       showList = widget.children;
-      canExpanded = false;
+      _canFold = false;
     } else {
       indexModal = widget.children[_expandAtIndex];
       foldList = _generateFoldList();
       expandedList = _generateExpandedList();
-      canExpanded = true;
+      _canFold = true;
     }
     super.initState();
   }
@@ -186,7 +190,7 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
   Widget build(BuildContext context) {
     Widget showWidget;
 
-    if (canExpanded) {
+    if (_canFold) {
       if (_isFolded) {
         showList = foldList;
       } else {
@@ -281,9 +285,9 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
     Row row = Row(
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(right: 4),
+          padding: const EdgeInsets.only(right: 4),
           child: Text(
-            '展开',
+            BrnIntl.currentResource.expand,
             style: TextStyle(
               fontSize: 14,
               color: themeData.commonConfig.colorTextSecondary,
@@ -296,13 +300,14 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
     GestureDetector gdt = GestureDetector(
         child: row,
         onTap: () {
+          widget.onFolded?.call(!_isFolded);
           setState(() {
             _isFolded = !_isFolded;
           });
         });
 
     Container layerCtn = Container(
-      padding: EdgeInsets.only(left: 30),
+      padding: const EdgeInsets.only(left: 30),
       alignment: Alignment.center,
       child: gdt,
       decoration: BoxDecoration(
@@ -317,7 +322,7 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
     Widget foldButtonWidget = layerCtn;
 
     /// 将原有的value显示替换为 stack
-    BrnInfoModal brnMetaInfoModal = BrnInfoModal(
+    BrnInfoModal brnInfoModal = BrnInfoModal(
       isArrow: indexModal!.isArrow,
       keyPart: indexModal!.keyPart,
       valuePart: indexModal!.valuePart,
@@ -325,13 +330,13 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
     Container stack = Container(
       child: Stack(
         children: <Widget>[
-          _finalValueWidget(brnMetaInfoModal, itemSpacing: 0),
+          _finalValueWidget(brnInfoModal, itemSpacing: 0),
           Positioned(bottom: 0, right: 0, child: foldButtonWidget),
         ],
       ),
     );
-    brnMetaInfoModal.valuePart = stack;
-    return brnMetaInfoModal;
+    brnInfoModal.valuePart = stack;
+    return brnInfoModal;
   }
 
   BrnInfoModal _expandedButtonWidget() {
@@ -339,9 +344,9 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
     Row row = Row(
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(right: 4),
+          padding: const EdgeInsets.only(right: 4),
           child: Text(
-            '收起',
+            BrnIntl.currentResource.collapse,
             style: TextStyle(
               fontSize: 14,
               color: themeData.commonConfig.colorTextSecondary,
@@ -355,6 +360,7 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
     GestureDetector gdt = GestureDetector(
         child: row,
         onTap: () {
+          widget.onFolded?.call(!_isFolded);
           setState(() {
             _isFolded = !_isFolded;
           });
@@ -375,7 +381,7 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
     ///收起的widget
     Widget foldButtonWidget = layerCtn;
 
-    BrnInfoModal brnMetaInfoModal = BrnInfoModal(
+    BrnInfoModal brnInfoModal = BrnInfoModal(
       isArrow: widget.children.last.isArrow,
       keyPart: widget.children.last.keyPart,
       valuePart: widget.children.last.valuePart,
@@ -384,13 +390,13 @@ class _BrnPairInfoTableState extends State<BrnPairInfoTable> {
     Container stack = Container(
       child: Stack(
         children: <Widget>[
-          _finalValueWidget(brnMetaInfoModal, itemSpacing: 0),
+          _finalValueWidget(brnInfoModal, itemSpacing: 0),
           Positioned(bottom: 0, right: 0, child: foldButtonWidget),
         ],
       ),
     );
-    brnMetaInfoModal.valuePart = stack;
-    return brnMetaInfoModal;
+    brnInfoModal.valuePart = stack;
+    return brnInfoModal;
   }
 
   Widget _valueTitleText(String text,
@@ -578,9 +584,7 @@ class BrnFollowPairInfo extends StatelessWidget with PairInfoPart {
     if (infoModal.valueClickCallback != null) {
       value = GestureDetector(
         onTap: () {
-          if (infoModal.valueClickCallback != null) {
-            infoModal.valueClickCallback!();
-          }
+          infoModal.valueClickCallback?.call();
         },
         child: value,
       );
@@ -702,7 +706,7 @@ class BrnAlignPairInfo extends StatelessWidget with PairInfoPart {
 /// 用于展示信息的modal，封装了key和value的基本信息
 ///
 /// 基本的文本展示只需 传入keyPart和valuePart为字符串
-/// 复杂的展示 需要传入Widget，BrnMetaInfoModal的若干静态方法 提供了丰富简便的富文本使用方式
+/// 复杂的展示 需要传入Widget，BrnInfoModal的若干静态方法 提供了丰富简便的富文本使用方式
 ///
 class BrnInfoModal {
   /// 方便业务调用，具备两种类型 string 和 widget
@@ -736,6 +740,7 @@ class BrnInfoModal {
   /// clickCallback 可点击文案点击的回调
   /// isArrow 是否最右侧存在箭头
   static BrnInfoModal valueLastClickInfo(
+      BuildContext context,
     String keyTitle,
     String valueTitle,
     String clickValue, {
@@ -749,6 +754,10 @@ class BrnInfoModal {
     BrnPairInfoTableConfig? themeData,
   }) {
     themeData ??= BrnPairInfoTableConfig();
+    themeData = BrnThemeConfigurator.instance
+        .getConfig(configId: themeData.configId)
+        .pairInfoTableConfig
+        .merge(themeData);
     themeData = themeData.merge(BrnPairInfoTableConfig(
         itemSpacing: itemSpacing,
         keyTextStyle: BrnTextStyle(fontSize: fontSize),
@@ -756,10 +765,6 @@ class BrnInfoModal {
             .merge(BrnTextStyle.withStyle(valueTextStyle)),
         linkTextStyle: BrnTextStyle(fontSize: fontSize, color: linkColor)
             .merge(BrnTextStyle.withStyle(valueTextStyle))));
-    themeData = BrnThemeConfigurator.instance
-        .getConfig(configId: themeData.configId)
-        .pairInfoTableConfig
-        .merge(themeData);
 
     Widget valueWidget;
     if (isArrow) {
@@ -805,10 +810,7 @@ class BrnInfoModal {
               }
             },
           )
-          .addIcon(Container(
-            height: 0,
-            width: 0,
-          ))
+          .addIcon(const SizedBox.shrink())
           .build();
     }
 
@@ -830,6 +832,7 @@ class BrnInfoModal {
   /// valueCallback value的小问号点击的回调
   ///   /// isArrow 是否最右侧存在箭头
   static BrnInfoModal keyOrValueLastQuestionInfo(
+  BuildContext context,
     String keyTitle,
     String valueTitle, {
     bool keyShow = false,
@@ -845,22 +848,22 @@ class BrnInfoModal {
     BrnPairInfoTableConfig? themeData,
   }) {
     themeData ??= BrnPairInfoTableConfig();
+    themeData = BrnThemeConfigurator.instance
+        .getConfig(configId: themeData.configId)
+        .pairInfoTableConfig
+        .merge(themeData);
     themeData = themeData.merge(BrnPairInfoTableConfig(
         itemSpacing: itemSpacing,
         keyTextStyle: BrnTextStyle(fontSize: fontSize)
             .merge(BrnTextStyle.withStyle(keyTextStyle)),
         valueTextStyle: BrnTextStyle(fontSize: fontSize)
             .merge(BrnTextStyle.withStyle(valueTextStyle))));
-    themeData = BrnThemeConfigurator.instance
-        .getConfig(configId: themeData.configId)
-        .pairInfoTableConfig
-        .merge(themeData);
 
     dynamic valueWidget;
     dynamic keyWidget;
 
     if (isArrow) {
-      MediaQueryData mediaQuery = MediaQueryData.fromWindow(ui.window);
+      MediaQueryData mediaQuery = MediaQueryData.fromView(View.of(context));
       double screen = mediaQuery.size.width;
 
       if (keyShow) {
@@ -986,16 +989,16 @@ class BrnInfoModal {
     BrnPairInfoTableConfig? themeData,
   }) {
     themeData ??= BrnPairInfoTableConfig();
+    themeData = BrnThemeConfigurator.instance
+        .getConfig(configId: themeData.configId)
+        .pairInfoTableConfig
+        .merge(themeData);
     themeData = themeData.merge(BrnPairInfoTableConfig(
         itemSpacing: itemSpacing,
         keyTextStyle: BrnTextStyle(fontSize: fontSize)
             .merge(BrnTextStyle.withStyle(keyTextStyle)),
         valueTextStyle: BrnTextStyle(fontSize: fontSize)
             .merge(BrnTextStyle.withStyle(valueTextStyle))));
-    themeData = BrnThemeConfigurator.instance
-        .getConfig(configId: themeData.configId)
-        .pairInfoTableConfig
-        .merge(themeData);
 
     BrnRichTextGenerator keyGen = BrnRichTextGenerator();
     if (headIcon != null) {
@@ -1036,15 +1039,15 @@ class BrnInfoModal {
     BrnPairInfoTableConfig? themeData,
   }) {
     themeData ??= BrnPairInfoTableConfig();
+    themeData = BrnThemeConfigurator.instance
+        .getConfig(configId: themeData.configId)
+        .pairInfoTableConfig
+        .merge(themeData);
     themeData = themeData.merge(BrnPairInfoTableConfig(
         itemSpacing: itemSpacing,
         keyTextStyle: BrnTextStyle(fontSize: fontSize),
         valueTextStyle: BrnTextStyle(fontSize: fontSize)
             .merge(BrnTextStyle.withStyle(valueTextStyle))));
-    themeData = BrnThemeConfigurator.instance
-        .getConfig(configId: themeData.configId)
-        .pairInfoTableConfig
-        .merge(themeData);
 
     return BrnInfoModal(
         keyPart: keyTitle,

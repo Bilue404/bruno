@@ -1,5 +1,6 @@
 import 'package:bruno/src/components/form/base/brn_form_item_type.dart';
 import 'package:bruno/src/components/form/utils/brn_form_util.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,10 +62,13 @@ class BrnTextBlockInputFormItem extends StatefulWidget {
   final int? maxCharCount;
 
   /// 录入项 hint 提示
-  final String hint;
+  final String? hint;
 
   /// 输入内容类型
   final String? inputType;
+
+  /// 是否自动获取焦点
+  bool autofocus;
 
   /// 指定对输入数据的格式化要求
   final List<TextInputFormatter>? inputFormatters;
@@ -79,6 +83,9 @@ class BrnTextBlockInputFormItem extends StatefulWidget {
 
   /// 最大行数，默认值20
   final int? maxLines;
+
+  /// 背景色
+  final Color? backgroundColor;
 
   /// form配置
   BrnFormItemConfig? themeData;
@@ -98,13 +105,15 @@ class BrnTextBlockInputFormItem extends StatefulWidget {
       this.onRemoveTap,
       this.onTip,
       this.onChanged,
-      this.hint = "请输入",
+      this.hint,
       this.maxCharCount,
+      this.autofocus = false,
       this.inputType,
       this.inputFormatters,
       this.controller,
       this.minLines = 4,
       this.maxLines = 20,
+      this.backgroundColor,
       this.themeData})
       : super(key: key) {
     this.themeData ??= BrnFormItemConfig();
@@ -112,6 +121,9 @@ class BrnTextBlockInputFormItem extends StatefulWidget {
         .getConfig(configId: this.themeData!.configId)
         .formItemConfig
         .merge(this.themeData);
+    this.themeData = this
+        .themeData!
+        .merge(BrnFormItemConfig(backgroundColor: backgroundColor));
   }
 
   @override
@@ -132,7 +144,7 @@ class BrnTextBlockInputFormItemState extends State<BrnTextBlockInputFormItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: widget.themeData!.backgroundColor,
       padding: BrnFormUtil.itemEdgeInsets(widget.themeData!),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,6 +188,7 @@ class BrnTextBlockInputFormItemState extends State<BrnTextBlockInputFormItem> {
           Container(
             padding: BrnFormUtil.errorEdgeInsets(widget.themeData!),
             child: TextField(
+              autofocus: widget.autofocus,
               keyboardType: BrnFormUtil.getInputType(widget.inputType),
               controller: _controller,
               maxLength: widget.maxCharCount,
@@ -188,7 +201,8 @@ class BrnTextBlockInputFormItemState extends State<BrnTextBlockInputFormItem> {
                   widget.themeData!, widget.isEdit),
               inputFormatters: widget.inputFormatters,
               decoration: InputDecoration(
-                hintText: widget.hint,
+                hintText: widget.hint ??
+                    BrnIntl.of(context).localizedResource.pleaseEnter,
                 hintStyle: BrnFormUtil.getHintTextStyle(widget.themeData!),
                 contentPadding: EdgeInsets.all(0),
                 border: InputBorder.none,

@@ -126,7 +126,7 @@ class BrnTriangleIndicator extends Decoration {
 
   @override
   int get hashCode {
-    return hashValues(
+    return Object.hash(
       color,
       lineWidth,
       triWidth,
@@ -199,11 +199,6 @@ class _TriangleDecorationPainter extends BoxPainter {
 
     canvas.drawPath(_path, _paint);
     _path.reset();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override

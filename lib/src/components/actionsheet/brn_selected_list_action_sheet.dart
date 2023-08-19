@@ -3,8 +3,14 @@ import 'dart:math';
 import 'package:bruno/src/components/dialog/brn_dialog.dart';
 import 'package:bruno/src/components/line/brn_line.dart';
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
+
+typedef BrnItemTitleBuilder<T> = dynamic Function(int index, T entity);
+typedef BrnItemDeleteCallback<T> = bool Function(int deleteIdx, T deleteEntity);
+typedef BrnListDismissCallback = void Function(bool isClosedByClearButton);
+
 
 /// 监听数据刷新和列表关闭操作
 class BrnSelectedListActionSheetController extends ChangeNotifier {
@@ -50,7 +56,7 @@ class BrnSelectedListActionSheet<T> {
   final List<T> items;
 
   /// 获取对应 index 行内容的回调。类型必须为 String 或者自定义的 widget.自定义 widget 时，左边的 icon 会自动隐藏，自定义widget填充整行。
-  final dynamic Function(int index, T entity) itemTitleBuilder;
+  final BrnItemTitleBuilder<T> itemTitleBuilder;
 
   /// 控制视图隐藏/刷新列表等方法
   final BrnSelectedListActionSheetController? controller;
@@ -95,13 +101,13 @@ class BrnSelectedListActionSheet<T> {
   final VoidCallback? onClearCanceled;
 
   /// 每一行删除按钮的点击回调。返回值：是否要删除该 entity，如果该 handler 没有实现或者返回 true，则删除
-  final bool Function(int deleteIdx, T deleteEntity)? onItemDelete;
+  final BrnItemDeleteCallback<T>? onItemDelete;
 
   /// 视图显示时的回调
   final VoidCallback? onListShowed;
 
   /// 视图隐藏时的回调，会把是否是清空按钮触发的销毁视图回传
-  final void Function(bool isClosedByClearButton)? onListDismissed;
+  final BrnListDismissCallback? onListDismissed;
 
   OverlayEntry? _overlayEntry;
   double? _leftOffset;
@@ -160,10 +166,10 @@ class BrnSelectedListActionSheet<T> {
     if (_overlayEntry != null) {
       return;
     }
-    BrnSelectedListActionSheetController? tempCcontroller = controller;
-    if (tempCcontroller == null) {
-      tempCcontroller = BrnSelectedListActionSheetController();
-      tempCcontroller._isHidden = false;
+    BrnSelectedListActionSheetController? tempController = controller;
+    if (tempController == null) {
+      tempController = BrnSelectedListActionSheetController();
+      tempController._isHidden = false;
     }
     _BrnActionSheetSelectedItemListContentWidget content =
         _BrnActionSheetSelectedItemListContentWidget<T>(
@@ -173,7 +179,7 @@ class BrnSelectedListActionSheet<T> {
       },
       itemTitleBuilder: this.itemTitleBuilder,
       onItemDelete: this.onItemDelete,
-      controller: tempCcontroller,
+      controller: tempController,
     );
     content._overlayState = Overlay.of(context);
     OverlayEntry overlayEntry = OverlayEntry(builder: (context) {
@@ -209,8 +215,8 @@ class BrnSelectedListActionSheet<T> {
 class _BrnActionSheetSelectedItemListContentWidget<T> extends StatefulWidget {
   final BrnSelectedListActionSheet itemWidget;
   final void Function(bool isClear)? onDismiss;
-  final dynamic Function(int index, T entity) itemTitleBuilder;
-  final bool Function(int deleteIdx, T deleteEntity)? onItemDelete;
+  final BrnItemTitleBuilder<T> itemTitleBuilder;
+  final BrnItemDeleteCallback<T>? onItemDelete;
   final BrnSelectedListActionSheetController? controller;
 
   OverlayState? _overlayState;
@@ -323,7 +329,7 @@ class _BrnActionSheetSelectedItemListState<T>
       // 如果没有实现 onClear，执行默认弹窗并删除的逻辑
       this.dismissContent(true);
       BrnDialogManager.showConfirmDialog(context,
-          title: "确定要清空已选列表吗?", cancel: '取消', confirm: '确定', onConfirm: () {
+          title: BrnIntl.of(context).localizedResource.confirmClearSelectedList, cancel: BrnIntl.of(context).localizedResource.cancel, confirm: BrnIntl.of(context).localizedResource.ok, onConfirm: () {
         if (widget.itemWidget.onClearConfirmed != null) {
           widget.itemWidget.onClearConfirmed!();
         }
@@ -360,9 +366,9 @@ class _BrnActionSheetSelectedItemListState<T>
   Widget build(BuildContext context) {
     // 顶部标题处理
     String title =
-        (widget.itemWidget.title != null && widget.itemWidget.title!.length > 0)
+        (widget.itemWidget.title != null && widget.itemWidget.title!.isNotEmpty)
             ? widget.itemWidget.title!
-            : '已选列表';
+            : BrnIntl.of(context).localizedResource.selectedList;
     TextStyle titleStyle = const TextStyle(
         fontSize: 18,
         color: Color(0xff222222),
@@ -386,7 +392,7 @@ class _BrnActionSheetSelectedItemListState<T>
         },
         child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 20, 20, 15),
-            child: Text("清空",
+            child: Text(BrnIntl.of(context).localizedResource.clear,
                 textAlign: TextAlign.right,
                 style: TextStyle(
                     fontSize: 16,

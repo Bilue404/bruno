@@ -3,6 +3,7 @@ import 'package:bruno/src/components/selection/brn_selection_util.dart';
 import 'package:bruno/src/components/selection/widget/brn_selection_common_item_widget.dart';
 import 'package:bruno/src/components/selection/widget/brn_selection_list_widget.dart';
 import 'package:bruno/src/components/toast/brn_toast.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/configs/brn_selection_config.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +44,7 @@ class BrnSelectionSingleListWidget extends StatefulWidget {
 
     /// 当前 Items 所在的层级
     currentListIndex = BrnSelectionUtil.getCurrentListIndex(
-        items.length > 0 ? items[0] : null);
+        items.isNotEmpty ? items[0] : null);
     _selectedItems = items.where((f) => f.isSelected).toList();
   }
 
@@ -103,12 +104,12 @@ class _BrnSelectionSingleListWidgetState
                       /// 同级别中，存在不限类型已经选中情况，选择非不限类型 item，不检查数量限制
                     } else if (entity.isInLastLevel() &&
                         !BrnSelectionUtil.checkMaxSelectionCount(entity)) {
-                      BrnToast.show("您选择的筛选条件数量已达上限", context);
+                      BrnToast.show(BrnIntl.of(context).localizedResource.filterConditionCountLimited, context);
                       return;
                     }
                   } else {
                     if (!BrnSelectionUtil.checkMaxSelectionCount(entity)) {
-                      BrnToast.show("您选择的筛选条件数量已达上限", context);
+                      BrnToast.show(BrnIntl.of(context).localizedResource.filterConditionCountLimited, context);
                       return;
                     }
                   }
@@ -153,7 +154,7 @@ class _BrnSelectionSingleListWidgetState
     /// Warning !!!
     /// （两列、三列时）第一列节点是否被选中取决于它的子节点是否被选中，
     /// 只有当它子节点被选中时才会认为第一列的节点相应被选中。
-    if (widget.items.length > 0) {
+    if (widget.items.isNotEmpty) {
       widget.items[0].parent?.isSelected = (widget.items[0].parent?.children
                   .where((BrnSelectionEntity f) => f.isSelected)
                   .length ??

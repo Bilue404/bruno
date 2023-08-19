@@ -61,10 +61,10 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
             showPointDashLine: true,
             yHintLineOffset: 30,
             isTipWindowAutoDismiss: false,
+            isShowXDial: false,
             lines: [
               BrnPointsLine(
                 isShowPointText: true,
-                isShowXDial: true,
                 lineWidth: 3,
                 pointRadius: 4,
                 isShowPoint: true,
@@ -196,7 +196,6 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
     List<BrnPointsLine> pointsLineList = [];
     _pointsLine = BrnPointsLine(
       isShowPointText: true,
-      isShowXDial: true,
       lineWidth: 3,
       pointRadius: 4,
       isShowPoint: false,
@@ -256,7 +255,6 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
     );
     _pointsLine1 = BrnPointsLine(
       isShowPointText: true,
-      isShowXDial: true,
       lineWidth: 3,
       pointRadius: 4,
       isShowPoint: false,
@@ -325,31 +323,37 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
       BrnDialItem(
         dialText: '1月',
         dialTextStyle: TextStyle(fontSize: 12.0, color: Color(0xFF999999)),
+        selectedDialTextStyle: TextStyle(fontSize: 14.0, color: Colors.green),
         value: 1,
       ),
       BrnDialItem(
         dialText: '2月',
         dialTextStyle: TextStyle(fontSize: 12.0, color: Color(0xFF999999)),
+        selectedDialTextStyle: TextStyle(fontSize: 14.0, color: Colors.red),
         value: 2,
       ),
       BrnDialItem(
         dialText: '3月',
         dialTextStyle: TextStyle(fontSize: 12.0, color: Color(0xFF999999)),
+        selectedDialTextStyle: TextStyle(fontSize: 14.0, color: Colors.black),
         value: 3,
       ),
       BrnDialItem(
         dialText: '5月',
         dialTextStyle: TextStyle(fontSize: 12.0, color: Color(0xFF999999)),
+        selectedDialTextStyle: TextStyle(fontSize: 14.0, color: Colors.orange),
         value: 5,
       ),
       BrnDialItem(
         dialText: '6月',
         dialTextStyle: TextStyle(fontSize: 12.0, color: Color(0xFF999999)),
+        selectedDialTextStyle: TextStyle(fontSize: 14.0, color: Colors.yellow),
         value: 6,
       ),
       BrnDialItem(
         dialText: '7月',
         dialTextStyle: TextStyle(fontSize: 12.0, color: Color(0xFF999999)),
+        selectedDialTextStyle: TextStyle(fontSize: 14.0, color: Colors.amberAccent),
         value: 7,
       )
     ];
@@ -421,7 +425,6 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
     BrnPointsLine pointsLine, _pointsLine2;
     List<BrnPointsLine> pointsLineList = [];
     pointsLine = BrnPointsLine(
-      isShowXDial: true,
       lineWidth: 3,
       pointRadius: 4,
       isShowPoint: true,
@@ -574,7 +577,6 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
     );
 
     _pointsLine2 = BrnPointsLine(
-      isShowXDial: true,
       lineWidth: 3,
       pointRadius: 4,
       isShowPoint: false,
@@ -779,7 +781,6 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
     BrnPointsLine pointsLine, _pointsLine2;
     List<BrnPointsLine> pointsLineList = [];
     pointsLine = BrnPointsLine(
-      isShowXDial: true,
       lineWidth: 3,
       pointRadius: 4,
       isShowPoint: true,
@@ -932,7 +933,6 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
     );
 
     _pointsLine2 = BrnPointsLine(
-      isShowXDial: true,
       lineWidth: 3,
       pointRadius: 4,
       isShowPoint: false,
@@ -1171,7 +1171,6 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
     BrnPointsLine pointsLine, _pointsLine2;
     List<BrnPointsLine> pointsLineList = [];
     pointsLine = BrnPointsLine(
-      isShowXDial: true,
       lineWidth: 3,
       pointRadius: 4,
       pointColor: Colors.blue,
@@ -1333,7 +1332,6 @@ class _BrokenLineExampleState extends State<BrokenLineExample> {
     );
 
     _pointsLine2 = BrnPointsLine(
-      isShowXDial: true,
       lineWidth: 3,
       pointRadius: 4,
       isShowPoint: false,

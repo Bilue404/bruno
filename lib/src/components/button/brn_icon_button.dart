@@ -39,9 +39,6 @@ class BrnIconButton extends StatefulWidget {
   /// 图片高度，默认 24
   final double iconHeight;
 
-  /// 字体大小，默认 11
-  final double fontSize;
-
   ///  文字样式
   final TextStyle? style;
 
@@ -64,7 +61,6 @@ class BrnIconButton extends StatefulWidget {
     this.onTap,
     this.iconWidth = 24,
     this.iconHeight = 24,
-    this.fontSize = 11,
     this.widgetWidth = 80,
     this.widgetHeight = 80,
     this.direction = Direction.top,
@@ -93,14 +89,18 @@ class _BrnIconButtonState extends State<BrnIconButton> {
             children: <Widget>[
               // 图片
               Container(
-                  height: widget.iconHeight, width: widget.iconWidth, child: widget.iconWidget),
+                height: widget.iconHeight,
+                width: widget.iconWidth,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                    child: widget.iconWidget),
+              ),
               Padding(
                 padding: EdgeInsets.only(top: widget.padding),
                 child: Text(
                   widget.name,
                   style: widget.style ??
                       TextStyle(
-                        fontSize: 11,
                         color: BrnThemeConfigurator.instance
                             .getConfig()
                             .commonConfig
@@ -130,7 +130,6 @@ class _BrnIconButtonState extends State<BrnIconButton> {
                   widget.name,
                   style: widget.style ??
                       TextStyle(
-                        fontSize: 11,
                         color: BrnThemeConfigurator.instance
                             .getConfig()
                             .commonConfig
@@ -155,7 +154,6 @@ class _BrnIconButtonState extends State<BrnIconButton> {
                   widget.name,
                   style: widget.style ??
                       TextStyle(
-                        fontSize: 11,
                         color: BrnThemeConfigurator.instance
                             .getConfig()
                             .commonConfig
@@ -185,7 +183,6 @@ class _BrnIconButtonState extends State<BrnIconButton> {
                   widget.name,
                   style: widget.style ??
                       TextStyle(
-                        fontSize: 11,
                         color: BrnThemeConfigurator.instance
                             .getConfig()
                             .commonConfig

@@ -32,14 +32,16 @@ group:
 ```dart
 BrnSimpleSelection.radio({
   Key? key,
-  this.menuName,
-  this.menuKey = defaultMenuKey,
+  required this.menuName,
+  this.menuKey = _defaultMenuKey,
   this.defaultValue,
-  this.items,
-  this.maxSelectedCount = 1,
-  @required this.onSimpleSelectionChanged,
+  required this.items,
+  required this.onSimpleSelectionChanged,
   this.onMenuItemClick,
-})
+  this.themeData,
+})  : this.isRadio = true,
+      this.maxSelectedCount = BrnSelectionConstant.maxSelectCount,
+      super(key: key);
 ```
 
 #### 多选
@@ -47,14 +49,16 @@ BrnSimpleSelection.radio({
 ```dart
 BrnSimpleSelection.checkbox({
   Key? key,
-  this.menuName,
-  this.menuKey,
+  required this.menuName,
+  this.menuKey = _defaultMenuKey,
   this.defaultValue,
-  this.maxSelectedCount,
-  this.items,
-  @required this.onSimpleSelectionChanged,
+  this.maxSelectedCount = BrnSelectionConstant.maxSelectCount,
+  required this.items,
+  required this.onSimpleSelectionChanged,
   this.onMenuItemClick,
-  })
+  this.themeData,
+})  : this.isRadio = false,
+      super(key: key);
 ```
 
 
@@ -71,6 +75,7 @@ BrnSimpleSelection.checkbox({
 | onSimpleSelectionChanged | BrnSimpleSelectionOnSelectionChanged | 选择回调 | 是 |  |
 | onMenuItemClick | VoidCallback? | 菜单点击事件 | 否 | |
 | isRadio | bool | 是否单选  默认 radio模式 is true ， checkbox模式 is false | 否 | radio模式默认true checkbox模式默认false |
+| themeData | BrnSelectionConfig |筛选项配置类|否||
 
 ## 四、代码演示
 

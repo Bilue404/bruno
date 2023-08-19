@@ -1,7 +1,3 @@
-
-
-import 'dart:ui' as ui;
-
 import 'package:bruno/src/constants/brn_asset_constants.dart';
 import 'package:bruno/src/theme/base/brn_text_style.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
@@ -72,10 +68,7 @@ class BrnRichInfoGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (pairInfoList == null || pairInfoList!.isEmpty) {
-      return Container(
-        height: 0,
-        width: 0,
-      );
+      return const SizedBox.shrink();
     }
 
     return _buildGridView(context);
@@ -139,10 +132,7 @@ class BrnRichInfoGrid extends StatelessWidget {
   Widget _getKeyWidget(BrnRichGridInfo info, double width, BuildContext context,
       BrnPairRichInfoGridConfig config) {
     if (info.keyPart == null) {
-      return Container(
-        height: 0,
-        width: 0,
-      );
+      return const SizedBox.shrink();
     }
 
     if (info.keyPart is String) {
@@ -158,10 +148,7 @@ class BrnRichInfoGrid extends StatelessWidget {
       return info.keyPart;
     }
 
-    return Container(
-      height: 0,
-      width: 0,
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _getValueWidget(
@@ -182,10 +169,7 @@ class BrnRichInfoGrid extends StatelessWidget {
       return info.valuePart;
     }
 
-    return Container(
-      height: 0,
-      width: 0,
-    );
+    return const SizedBox.shrink();
   }
 }
 
@@ -205,6 +189,7 @@ class BrnRichGridInfo {
   /// clickCallback 可点击文案点击的回调
   /// isArrow 是否最右侧存在箭头
   static BrnRichGridInfo valueLastClickInfo(
+    BuildContext context,
     String keyTitle,
     String valueTitle, {
     Function(String key)? keyQuestionCallback,
@@ -215,12 +200,12 @@ class BrnRichGridInfo {
     BrnPairRichInfoGridConfig? themeData,
   }) {
     themeData ??= BrnPairRichInfoGridConfig();
-    themeData = themeData.merge(BrnPairRichInfoGridConfig(
-        linkTextStyle: BrnTextStyle(color: clickColor)));
     themeData = BrnThemeConfigurator.instance
         .getConfig(configId: themeData.configId)
         .pairRichInfoGridConfig
         .merge(themeData);
+    themeData = themeData.merge(BrnPairRichInfoGridConfig(
+        linkTextStyle: BrnTextStyle(color: clickColor)));
 
     Widget _getQuestionImage(bool isKey) {
       return GestureDetector(
@@ -246,7 +231,7 @@ class BrnRichGridInfo {
           }
         },
         child: Padding(
-          padding: EdgeInsets.only(left: 4),
+          padding: const EdgeInsets.only(left: 4),
           child: Container(
             constraints: BoxConstraints(maxWidth: 56),
             child: Text(clickTitle,
@@ -263,7 +248,7 @@ class BrnRichGridInfo {
     bool isShowValueQuestion = valueQuestionCallback != null;
     bool isShowValueClick = clickTitle.isNotEmpty;
 
-    MediaQueryData mediaQuery = MediaQueryData.fromWindow(ui.window);
+    MediaQueryData mediaQuery = MediaQueryData.fromView(View.of(context));
     double screen = mediaQuery.size.width;
 
     Widget key = Container(
@@ -283,12 +268,7 @@ class BrnRichGridInfo {
               style: _getKeyStyle(themeData: themeData),
             ),
           ),
-          isShowKeyQuestion
-              ? _getQuestionImage(true)
-              : Container(
-                  height: 0,
-                  width: 0,
-                ),
+          isShowKeyQuestion ? _getQuestionImage(true) : const SizedBox.shrink(),
           Text(
             '：',
             style: _getKeyStyle(themeData: themeData),
@@ -313,16 +293,10 @@ class BrnRichGridInfo {
           ),
           isShowValueClick
               ? _getClickValue(themeData: themeData)
-              : Container(
-                  height: 0,
-                  width: 0,
-                ),
+              : const SizedBox.shrink(),
           isShowValueQuestion
               ? _getQuestionImage(false)
-              : Container(
-                  height: 0,
-                  width: 0,
-                ),
+              : const SizedBox.shrink(),
         ],
       ),
     );

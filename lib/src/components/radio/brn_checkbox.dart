@@ -1,4 +1,6 @@
-import 'package:bruno/bruno.dart';
+import 'package:bruno/src/components/radio/brn_radio_core.dart';
+import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
 
 ///多选按钮
@@ -36,11 +38,15 @@ class BrnCheckbox extends StatefulWidget {
   /// 默认值MainAxisAlignment.start
   final MainAxisAlignment mainAxisAlignment;
 
+  /// 控件和选择按钮在row布局里面的crossAxisAlignment
+  /// 默认值CrossAxisAlignment.center
+  final CrossAxisAlignment crossAxisAlignment;
+
   /// 控件和选择按钮在row布局里面的mainAxisSize
   /// 默认值MainAxisSize.min
   final MainAxisSize mainAxisSize;
 
-  /// 默认值HitTestBehavior.translucent控制widget.onRadioItemClick触发的点击范围
+  /// 默认值HitTestBehavior.translucent。控制widget.onRadioItemClick触发的点击范围
   final HitTestBehavior behavior;
 
   const BrnCheckbox(
@@ -53,6 +59,7 @@ class BrnCheckbox extends StatefulWidget {
       this.child,
       this.childOnRight = true,
       this.mainAxisAlignment = MainAxisAlignment.start,
+      this.crossAxisAlignment = CrossAxisAlignment.center,
       this.mainAxisSize = MainAxisSize.min,
       this.behavior = HitTestBehavior.translucent});
 
@@ -72,6 +79,15 @@ class BrnCheckboxState extends State<BrnCheckbox> {
   }
 
   @override
+  void didUpdateWidget(covariant BrnCheckbox oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.isSelected != widget.isSelected) {
+      _isSelected = widget.isSelected;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BrnRadioCore(
       radioIndex: widget.radioIndex,
@@ -80,6 +96,7 @@ class BrnCheckboxState extends State<BrnCheckbox> {
       iconPadding: widget.iconPadding,
       childOnRight: widget.childOnRight,
       mainAxisAlignment: widget.mainAxisAlignment,
+      crossAxisAlignment: widget.crossAxisAlignment,
       mainAxisSize: widget.mainAxisSize,
       selectedImage: BrunoTools.getAssetImageWithBandColor(
           BrnAsset.iconRadioMultiSelected),

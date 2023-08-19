@@ -48,6 +48,9 @@ class ExpansionElementWidget extends StatefulWidget {
         .getConfig(configId: this.themeData!.configId)
         .formItemConfig
         .merge(this.themeData);
+    this.themeData = this
+        .themeData!
+        .merge(BrnFormItemConfig(backgroundColor: backgroundColor));
   }
 
   /// The primary content of the list item.
@@ -115,7 +118,7 @@ class _ExpansionElementState extends State<ExpansionElementWidget>
   void initState() {
     super.initState();
     _isExpanded =
-        PageStorage.of(context)?.readState(context) ?? widget.initiallyExpanded;
+        PageStorage.of(context).readState(context) ?? widget.initiallyExpanded;
 
     _controller = AnimationController(
         duration: Duration(milliseconds: 200) /*_kExpand*/, vsync: this);
@@ -160,20 +163,19 @@ class _ExpansionElementState extends State<ExpansionElementWidget>
           if (!mounted) return;
         });
       }
-      PageStorage.of(context)?.writeState(context, _isExpanded);
+      PageStorage.of(context).writeState(context, _isExpanded);
     });
-    if (widget.onExpansionChanged != null)
+    if (widget.onExpansionChanged != null) {
       widget.onExpansionChanged!(_isExpanded);
+    }
   }
 
   Widget _buildHeader(BuildContext context, Widget? child) {
     final Color borderSideColor = /*_borderColor.value ??*/ Colors.transparent;
-    final Color backgroundColor = /*_backgroundColor.value ??*/ Colors
-        .transparent;
 
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: widget.themeData!.backgroundColor,
         border: Border(
           top: BorderSide(color: borderSideColor),
           bottom: BorderSide(color: borderSideColor),
@@ -183,7 +185,6 @@ class _ExpansionElementState extends State<ExpansionElementWidget>
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-            color: Colors.white,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -237,7 +238,6 @@ class _ExpansionElementState extends State<ExpansionElementWidget>
 
           // 副标题
           Container(
-            color: Colors.white,
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.only(left: 20, top: 4, bottom: 14),
             child: Offstage(
@@ -271,8 +271,8 @@ class _ExpansionElementState extends State<ExpansionElementWidget>
 
     /// title 文字颜色
     _headerColorTween
-      ..begin = theme.textTheme.subtitle1!.color
-      ..end = theme.textTheme.subtitle1!.color;
+      ..begin = theme.textTheme.titleMedium!.color
+      ..end = theme.textTheme.titleMedium!.color;
 
     /// 展开收起图标颜色
     _iconColorTween

@@ -1,11 +1,11 @@
 import 'package:bruno/src/components/selection/bean/brn_selection_common_entity.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/configs/brn_selection_config.dart';
 import 'package:bruno/src/utils/brn_event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-typedef void OnRangeChangedFunction(String minInput, String maxInput);
-typedef void OnFocusChangedFunction(bool focus);
+typedef RangeChangedCallback = void Function(String minInput, String maxInput);
 
 /// 清空自定义范围输入框焦点的事件类
 class ClearSelectionFocusEvent {}
@@ -13,8 +13,8 @@ class ClearSelectionFocusEvent {}
 class BrnSelectionRangeItemWidget extends StatefulWidget {
   final BrnSelectionEntity item;
 
-  final OnRangeChangedFunction? onRangeChanged;
-  final OnFocusChangedFunction? onFocusChanged;
+  final RangeChangedCallback? onRangeChanged;
+  final ValueChanged<bool>? onFocusChanged;
 
   final bool isShouldClearText;
 
@@ -109,7 +109,7 @@ class _BrnSelectionRangeItemWidgetState
               margin: EdgeInsets.only(bottom: 5),
               alignment: Alignment.centerLeft,
               child: Text(
-                (widget.item.title.isNotEmpty ? widget.item.title : '自定义区间') +
+                (widget.item.title.isNotEmpty ? widget.item.title : BrnIntl.of(context).localizedResource.customRange) +
                     "(" +
                     (widget.item.extMap['unit']?.toString() ?? '') +
                     ")",
@@ -122,7 +122,7 @@ class _BrnSelectionRangeItemWidgetState
                 getRangeTextField(false),
                 Container(
                   child: Text(
-                    "至",
+                    BrnIntl.of(context).localizedResource.to,
                     style: widget.themeData.inputTextStyle.generateTextStyle(),
                   ),
                 ),
@@ -152,7 +152,7 @@ class _BrnSelectionRangeItemWidgetState
         textAlign: TextAlign.center,
         decoration: InputDecoration(
           hintStyle: widget.themeData.hintTextStyle.generateTextStyle(),
-          hintText: (isMax ? '最大值' : '最小值'),
+          hintText: (isMax ? BrnIntl.of(context).localizedResource.maxValue : BrnIntl.of(context).localizedResource.minValue),
           enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
             width: 1,

@@ -27,6 +27,7 @@ class BrnAppBarConfig extends BrnBaseConfig {
     EdgeInsets? titlePadding,
     double? iconSize,
     SystemUiOverlayStyle? systemUiOverlayStyle,
+    bool? showDefaultBottom,
     String configId = GLOBAL_CONFIG_ID,
   })  : _backgroundColor = backgroundColor,
         _appBarHeight = appBarHeight,
@@ -38,7 +39,8 @@ class BrnAppBarConfig extends BrnBaseConfig {
         _itemSpacing = itemSpacing,
         _titlePadding = titlePadding,
         _iconSize = iconSize,
-        _systemUiOverlayStyle = systemUiOverlayStyle,
+        _systemOverlayStyle = systemUiOverlayStyle,
+        _showDefaultBottom = showDefaultBottom,
         super(configId: configId);
 
   BrnAppBarConfig.dark({
@@ -74,7 +76,7 @@ class BrnAppBarConfig extends BrnBaseConfig {
       fontSize: BrnAppBarTheme.actionFontSize,
       fontWeight: FontWeight.w600,
     );
-    _systemUiOverlayStyle = SystemUiOverlayStyle.light;
+    _systemOverlayStyle = SystemUiOverlayStyle.light;
   }
 
   BrnAppBarConfig.light({
@@ -110,7 +112,7 @@ class BrnAppBarConfig extends BrnBaseConfig {
       fontSize: BrnAppBarTheme.actionFontSize,
       fontWeight: FontWeight.w600,
     );
-    _systemUiOverlayStyle = SystemUiOverlayStyle.dark;
+    _systemOverlayStyle = SystemUiOverlayStyle.dark;
   }
 
   /// AppBar 的背景色
@@ -190,11 +192,19 @@ class BrnAppBarConfig extends BrnBaseConfig {
 
   /// statusBar 样式
   /// 默认为 [SystemUiOverlayStyle.dark]
-  SystemUiOverlayStyle? _systemUiOverlayStyle;
+  SystemUiOverlayStyle? _systemOverlayStyle;
 
-  SystemUiOverlayStyle get systemUiOverlayStyle =>
-      _systemUiOverlayStyle ??
-      BrnDefaultConfigUtils.defaultAppBarConfig.systemUiOverlayStyle;
+  SystemUiOverlayStyle get systemOverlayStyle =>
+      _systemOverlayStyle ??
+      BrnDefaultConfigUtils.defaultAppBarConfig.systemOverlayStyle;
+
+  /// 是否展示Appbar bottom 分割线
+  /// 默认为 [false]
+  bool? _showDefaultBottom;
+
+  bool get showDefaultBottom =>
+      _showDefaultBottom ??
+          BrnDefaultConfigUtils.defaultAppBarConfig.showDefaultBottom;
 
   @override
   void initThemeConfig(
@@ -221,7 +231,8 @@ class BrnAppBarConfig extends BrnBaseConfig {
     _itemSpacing ??= appbarConfig._itemSpacing;
     _titlePadding ??= appbarConfig._titlePadding;
     _iconSize ??= appbarConfig._iconSize;
-    _systemUiOverlayStyle ??= appbarConfig._systemUiOverlayStyle;
+    _systemOverlayStyle ??= appbarConfig._systemOverlayStyle;
+    _showDefaultBottom ??= appbarConfig._showDefaultBottom;
   }
 
   BrnAppBarConfig copyWith({
@@ -236,6 +247,7 @@ class BrnAppBarConfig extends BrnBaseConfig {
     EdgeInsets? titlePadding,
     double? iconSize,
     SystemUiOverlayStyle? systemUiOverlayStyle,
+    bool? showDefaultBottom,
   }) {
     return BrnAppBarConfig(
       backgroundColor: backgroundColor ?? _backgroundColor,
@@ -248,7 +260,8 @@ class BrnAppBarConfig extends BrnBaseConfig {
       itemSpacing: itemSpacing ?? _itemSpacing,
       titlePadding: titlePadding ?? _titlePadding,
       iconSize: iconSize ?? _iconSize,
-      systemUiOverlayStyle: systemUiOverlayStyle ?? _systemUiOverlayStyle,
+      systemUiOverlayStyle: systemUiOverlayStyle ?? _systemOverlayStyle,
+      showDefaultBottom: showDefaultBottom ?? _showDefaultBottom,
     );
   }
 
@@ -265,7 +278,8 @@ class BrnAppBarConfig extends BrnBaseConfig {
       itemSpacing: other._itemSpacing,
       titlePadding: other._titlePadding,
       iconSize: other._iconSize,
-      systemUiOverlayStyle: other._systemUiOverlayStyle,
+      systemUiOverlayStyle: other._systemOverlayStyle,
+      showDefaultBottom: other._showDefaultBottom,
     );
   }
 }

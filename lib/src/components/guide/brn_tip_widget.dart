@@ -1,6 +1,7 @@
 import 'package:bruno/src/components/button/brn_icon_button.dart';
 import 'package:bruno/src/components/guide/brn_flutter_guide.dart';
 import 'package:bruno/src/constants/brn_asset_constants.dart';
+import 'package:bruno/src/l10n/brn_intl.dart';
 import 'package:bruno/src/theme/brn_theme_configurator.dart';
 import 'package:bruno/src/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
@@ -48,11 +49,11 @@ class BrnTipInfoWidget extends StatelessWidget {
     Color borderColor =
         mode == GuideMode.force ? Colors.transparent : Color(0xFFCCCCCC);
     if (direction == GuideDirection.bottomLeft ||
-        direction == GuideDirection.bottomRight)
+        direction == GuideDirection.bottomRight) {
       return Column(
         verticalDirection: VerticalDirection.up,
         children: <Widget>[
-          buildContent(),
+          _buildContent(context),
           Container(
             alignment: direction == GuideDirection.bottomLeft
                 ? Alignment.bottomRight
@@ -70,11 +71,12 @@ class BrnTipInfoWidget extends StatelessWidget {
           ),
         ],
       );
+    }
     if (direction == GuideDirection.topLeft ||
-        direction == GuideDirection.topRight)
+        direction == GuideDirection.topRight) {
       return Column(
         children: <Widget>[
-          buildContent(),
+          _buildContent(context),
           Container(
             alignment: direction == GuideDirection.topLeft
                 ? Alignment.topRight
@@ -90,12 +92,13 @@ class BrnTipInfoWidget extends StatelessWidget {
           ),
         ],
       );
-    if (direction == GuideDirection.left)
+    }
+    if (direction == GuideDirection.left) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          buildContent(),
+          _buildContent(context),
           Container(
             alignment: Alignment.topLeft,
             padding: EdgeInsets.only(top: 12),
@@ -107,13 +110,14 @@ class BrnTipInfoWidget extends StatelessWidget {
           ),
         ],
       );
-    if (direction == GuideDirection.right)
+    }
+    if (direction == GuideDirection.right) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         textDirection: TextDirection.rtl,
         verticalDirection: VerticalDirection.up,
         children: <Widget>[
-          buildContent(),
+          _buildContent(context),
           Container(
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.only(top: 12),
@@ -127,10 +131,11 @@ class BrnTipInfoWidget extends StatelessWidget {
           ),
         ],
       );
+    }
     return Row();
   }
 
-  Widget buildContent() {
+  Widget _buildContent(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -153,7 +158,7 @@ class BrnTipInfoWidget extends StatelessWidget {
           buildImage(),
           buildTitle(),
           buildMessage(),
-          mode == GuideMode.force ? buildForceBottom() : buildSoftBottom()
+          mode == GuideMode.force ? _buildForceBottom(context) : _buildSoftBottom(context)
         ],
       ),
     );
@@ -216,7 +221,7 @@ class BrnTipInfoWidget extends StatelessWidget {
     );
   }
 
-  Widget buildSoftBottom() {
+  Widget _buildSoftBottom(BuildContext context) {
     if (onNext == null && onSkip == null) return Row();
     return Container(
       height: 32,
@@ -237,7 +242,7 @@ class BrnTipInfoWidget extends StatelessWidget {
                           onSkip!();
                         },
                         child: Text(
-                          '跳过 (${currentStepIndex + 1}/$stepCount)',
+                          '${BrnIntl.of(context).localizedResource.skip} (${currentStepIndex + 1}/$stepCount)',
                           style:
                               TextStyle(color: Color(0xFF999999), fontSize: 14),
                         ),
@@ -269,8 +274,8 @@ class BrnTipInfoWidget extends StatelessWidget {
                         child: Text(
                           nextTip ??
                               (stepCount == currentStepIndex + 1
-                                  ? '我知道了'
-                                  : '下一步'),
+                                  ? BrnIntl.of(context).localizedResource.known
+                                  : BrnIntl.of(context).localizedResource.next),
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ),
@@ -283,7 +288,7 @@ class BrnTipInfoWidget extends StatelessWidget {
     );
   }
 
-  Widget buildForceBottom() {
+  Widget _buildForceBottom(BuildContext context) {
     if (onNext == null && onSkip == null) return Row();
     return Container(
       height: 20,
@@ -304,7 +309,7 @@ class BrnTipInfoWidget extends StatelessWidget {
                           onSkip!();
                         },
                         child: Text(
-                          '跳过 (${currentStepIndex + 1}/$stepCount)',
+                          '${BrnIntl.of(context).localizedResource.skip} (${currentStepIndex + 1}/$stepCount)',
                           style:
                               TextStyle(color: Color(0xFF999999), fontSize: 14),
                         ),
@@ -328,8 +333,8 @@ class BrnTipInfoWidget extends StatelessWidget {
                         child: Text(
                           nextTip ??
                               (stepCount == currentStepIndex + 1
-                                  ? '我知道了'
-                                  : '下一步'),
+                                  ? BrnIntl.of(context).localizedResource.known
+                                  : BrnIntl.of(context).localizedResource.next),
                           style: TextStyle(
                               color: BrnThemeConfigurator.instance
                                   .getConfig()

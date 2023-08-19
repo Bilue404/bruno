@@ -1,7 +1,10 @@
 class BrnAsset {
   const BrnAsset._();
 
-  static const String emptyState = "images/empty_state.png";
+  static const String contentFailed = "images/content_failed.png";
+  static const String noData = "images/no_data.png";
+  static const String networkError = "images/network_error.png";
+
   static const String stepTitle = 'images/img_step_title.png';
 
   static const String refreshArrowUp = "images/refresh_arrow_up.png";
@@ -160,15 +163,15 @@ class BrnAsset {
       'assets/images/icon_appraise_surprise_default.png';
 
   static const String iconAppraiseBadSelected =
-      'assets/images/icon_appraise_bad_selected.png';
+      'assets/images/icon_appraise_bad_selected.gif';
   static const String iconAppraiseNotGoodSelected =
-      'assets/images/icon_appraise_not_good_selected.png';
+      'assets/images/icon_appraise_not_good_selected.gif';
   static const String iconAppraiseOkSelected =
-      'assets/images/icon_appraise_ok_selected.png';
+      'assets/images/icon_appraise_ok_selected.gif';
   static const String iconAppraiseGoodSelected =
-      'assets/images/icon_appraise_good_selected.png';
+      'assets/images/icon_appraise_good_selected.gif';
   static const String iconAppraiseSurpriseSelected =
-      'assets/images/icon_appraise_surprise_selected.png';
+      'assets/images/icon_appraise_surprise_selected.gif';
   static const String iconQuestion = "icons/icon_question.png";
 
   /// 录入项icon

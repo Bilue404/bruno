@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import 'package:bindings_compatible/bindings_compatible.dart';
 import 'package:flutter/material.dart';
 
 /// 文字跑马灯Widget
@@ -26,12 +28,12 @@ class BrnMarqueeText extends StatefulWidget {
 
   BrnMarqueeText({
     required this.text,
-    this.width: 0,
-    this.height: 0,
-    this.timerRest: 100,
+    this.width = 0,
+    this.height = 0,
+    this.timerRest = 100,
     this.textStyle,
-    this.scrollAxis: Axis.horizontal,
-    this.ratioOfBlankToScreen: 0.25,
+    this.scrollAxis = Axis.horizontal,
+    this.ratioOfBlankToScreen = 0.25,
   });
 
   @override
@@ -54,7 +56,7 @@ class BrnMarqueeTextState extends State<BrnMarqueeText>
   void initState() {
     super.initState();
     scroController = new ScrollController();
-    WidgetsBinding.instance?.addPostFrameCallback((callback) {
+    useWidgetsBinding().addPostFrameCallback((callback) {
       var size = context.findRenderObject()!.paintBounds.size;
       widget.width = (widget.width) > 0 ? widget.width : size.width;
       widget.height = (widget.height) > 0 ? widget.height : size.height;
@@ -126,9 +128,9 @@ class BrnMarqueeTextState extends State<BrnMarqueeText>
 
   Widget getCenterChild() {
     if (widget.scrollAxis == Axis.horizontal) {
-      return new Container(width: blankWidth);
+      return Container(width: blankWidth);
     } else {
-      return new Container(height: blankHeight);
+      return Container(height: blankHeight);
     }
   }
 
